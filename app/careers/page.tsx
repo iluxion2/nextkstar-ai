@@ -344,7 +344,7 @@ export default function CareersPage() {
               Contact Us
             </a>
             <a
-              href="mailto:careers@nextkstar.com"
+                              href="mailto:team@nextkstar.com"
               className="inline-block border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition-all"
             >
               Send Resume

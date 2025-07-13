@@ -119,7 +119,7 @@ export default function PrivacyPage() {
               If you have any questions about this privacy policy or our cookie usage, please contact us at:
             </p>
             <p className="text-blue-600 mt-2">
-              privacy@nextkstar.com
+                              team@nextkstar.com
             </p>
           </section>
         </div>

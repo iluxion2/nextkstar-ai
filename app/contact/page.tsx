@@ -75,8 +75,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{getTranslation('Email', language)}</h3>
-                  <p className="text-gray-600">support@nextkstar.com</p>
-                  <p className="text-gray-600">business@nextkstar.com</p>
+                  <p className="text-gray-600">team@nextkstar.com</p>
                 </div>
               </div>
 

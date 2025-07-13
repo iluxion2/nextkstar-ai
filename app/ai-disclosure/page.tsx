@@ -156,9 +156,9 @@ export default function AIDisclosurePage() {
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-700">
-                <strong>{getTranslation('AI Ethics Team:', language)}</strong> ai-ethics@nextkstar.com<br />
-                <strong>{getTranslation('General Support:', language)}</strong> support@nextkstar.com<br />
-                <strong>{getTranslation('Privacy Concerns:', language)}</strong> privacy@nextkstar.com
+                <strong>{getTranslation('AI Ethics Team:', language)}</strong> team@nextkstar.com<br />
+                <strong>{getTranslation('General Support:', language)}</strong> team@nextkstar.com<br />
+                <strong>{getTranslation('Privacy Concerns:', language)}</strong> team@nextkstar.com
               </p>
             </div>
           </section>

@@ -128,7 +128,7 @@ export default function TermsPage() {
             </p>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-700">
-                <strong>{getTranslation('Email:', language)}</strong> legal@nextkstar.com<br />
+                <strong>{getTranslation('Email:', language)}</strong> team@nextkstar.com<br />
                 <strong>{getTranslation('Address:', language)}</strong> NextKStar Inc., 123 AI Boulevard, Tech City, TC 12345, United States
               </p>
             </div>
