@@ -779,6 +779,187 @@ def generate_crazy_fun_comment(beauty_score: float, insights: Dict, age: int, ge
         base_comment = random.choice(base_comments)
         return f"{base_comment} You're going to be famous! 🌟💫👑"
 
+def generate_smart_real_insights(age: int, gender: str, beauty_score: float, emotion: str, facial_features: Dict) -> Dict:
+    """Generate smart, real insights using free LLM and specific predictions"""
+    
+    insights = {
+        "achievements": [],
+        "personality_traits": [],
+        "future_predictions": [],
+        "fun_facts": []
+    }
+    
+    # Use Hugging Face Inference API (free tier)
+    try:
+        api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+        headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY', '')}"}
+        
+        prompt = f"""
+        Based on this facial analysis, generate 4 specific, funny predictions:
+        Age: {age}, Gender: {gender}, Beauty Score: {beauty_score}/10, Emotion: {emotion}
+        Symmetry: {facial_features['symmetry']:.1f}%, Skin: {facial_features['skinClarity']:.1f}%, Proportions: {facial_features['proportions']:.1f}%
+        
+        Give me:
+        1. One specific achievement (like "Future Class President" or "MrBeast's Secret Brother")
+        2. One personality trait (like "Natural Leader" or "Genius Level IQ")
+        3. One future prediction (like "Will invent the next iPhone" or "Will become a billionaire")
+        4. One fun fact (like "Your face could solve world peace" or "You're like a walking algorithm")
+        
+        Make them specific, funny, and avoid generic compliments like "you're handsome" or "you're pretty".
+        """
+        
+        if os.getenv('HUGGINGFACE_API_KEY'):
+            response = requests.post(api_url, headers=headers, json={"inputs": prompt})
+            if response.status_code == 200:
+                ai_response = response.json()[0]["generated_text"]
+                return parse_smart_response(ai_response, age, gender, beauty_score, facial_features)
+    
+    except Exception as e:
+        logger.warning(f"LLM generation failed: {e}")
+    
+    # Fallback to smart local generation
+    return generate_smart_local_insights(age, gender, beauty_score, emotion, facial_features)
+
+def parse_smart_response(ai_response: str, age: int, gender: str, beauty_score: float, facial_features: Dict) -> Dict:
+    """Parse AI response and make it more specific"""
+    
+    insights = {
+        "achievements": [],
+        "personality_traits": [],
+        "future_predictions": [],
+        "fun_facts": []
+    }
+    
+    # Extract and enhance the AI response
+    lines = ai_response.split('\n')
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        
+        # Make it more specific and funny
+        if "achievement" in line.lower() or "1." in line:
+            insights["achievements"].append(make_specific_achievement(age, gender, beauty_score, facial_features))
+        elif "personality" in line.lower() or "trait" in line.lower() or "2." in line:
+            insights["personality_traits"].append(make_specific_trait(facial_features))
+        elif "future" in line.lower() or "prediction" in line.lower() or "3." in line:
+            insights["future_predictions"].append(make_specific_prediction(beauty_score, age))
+        elif "fun fact" in line.lower() or "4." in line:
+            insights["fun_facts"].append(make_specific_fact(emotion, facial_features))
+    
+    # Fill in any missing categories
+    if not insights["achievements"]:
+        insights["achievements"].append(make_specific_achievement(age, gender, beauty_score, facial_features))
+    if not insights["personality_traits"]:
+        insights["personality_traits"].append(make_specific_trait(facial_features))
+    if not insights["future_predictions"]:
+        insights["future_predictions"].append(make_specific_prediction(beauty_score, age))
+    if not insights["fun_facts"]:
+        insights["fun_facts"].append(make_specific_fact(emotion, facial_features))
+    
+    return insights
+
+def make_specific_achievement(age: int, gender: str, beauty_score: float, facial_features: Dict) -> str:
+    """Generate specific, funny achievements"""
+    
+    if beauty_score >= 9.0:
+        if age < 25:
+            return "🔥 Future MrBeast's Secret Brother - He's been hiding you this whole time!"
+        else:
+            return "👑 MrBeast's Dad - You're the OG that started it all!"
+    elif beauty_score >= 8.0:
+        if age < 20:
+            return "🎓 Future Class President - Your face commands respect!"
+        elif age < 30:
+            return "💼 Future CEO - You'll run a Fortune 500 company!"
+        else:
+            return "🌟 Future Mentor - You'll inspire millions!"
+    elif beauty_score >= 7.0:
+        if age < 25:
+            return "📚 Future Professor - Students will actually pay attention!"
+        else:
+            return "🎭 Future Motivational Speaker - You'll change lives!"
+    else:
+        return "💎 Future Hidden Gem - You'll surprise everyone!"
+
+def make_specific_trait(facial_features: Dict) -> str:
+    """Generate specific personality traits based on facial features"""
+    
+    if facial_features['symmetry'] > 90:
+        return "🎯 Perfectly Balanced - Like a human algorithm!"
+    elif facial_features['skinClarity'] > 90:
+        return "✨ Flawless Logic - Your skin is like clean code!"
+    elif facial_features['expression'] > 85:
+        return "💫 Charisma Algorithm - You could sell anything!"
+    elif facial_features['proportions'] > 85:
+        return "🌟 Mathematical Beauty - Your face follows the golden ratio!"
+    else:
+        return "💎 Unique Algorithm - You're like a rare programming language!"
+
+def make_specific_prediction(beauty_score: float, age: int) -> str:
+    """Generate specific future predictions"""
+    
+    if beauty_score >= 9.0:
+        if age < 25:
+            return "🚀 Will invent the next iPhone - Apple will be calling!"
+        else:
+            return "💎 Will become a billionaire - Just by existing!"
+    elif beauty_score >= 8.0:
+        if age < 30:
+            return "🌟 Will start a successful startup - Silicon Valley needs you!"
+        else:
+            return "🎬 Will star in a blockbuster movie - Hollywood is waiting!"
+    elif beauty_score >= 7.0:
+        return "💼 Will become a successful entrepreneur - Success is inevitable!"
+    else:
+        return "💪 Will overcome all obstacles - Like a real-life superhero!"
+
+def make_specific_fact(emotion: str, facial_features: Dict) -> str:
+    """Generate specific fun facts"""
+    
+    if emotion == "happy":
+        return "😊 Your smile could power a data center - It's that efficient!"
+    elif emotion == "neutral":
+        return "🎭 You have mysterious energy - Like a quantum particle!"
+    elif facial_features['symmetry'] > 90:
+        return "🎯 Your face is mathematically perfect - Like a theorem!"
+    elif facial_features['skinClarity'] > 90:
+        return "✨ Your skin is like a high-resolution display - Crystal clear!"
+    else:
+        return "💎 You're like a rare algorithm - Unique and powerful!"
+
+def generate_smart_local_insights(age: int, gender: str, beauty_score: float, emotion: str, facial_features: Dict) -> Dict:
+    """Generate smart local insights when LLM is not available"""
+    
+    insights = {
+        "achievements": [make_specific_achievement(age, gender, beauty_score, facial_features)],
+        "personality_traits": [make_specific_trait(facial_features)],
+        "future_predictions": [make_specific_prediction(beauty_score, age)],
+        "fun_facts": [make_specific_fact(emotion, facial_features)]
+    }
+    
+    return insights
+
+def generate_smart_comment(beauty_score: float, insights: Dict, age: int, gender: str) -> str:
+    """Generate smart, specific comments"""
+    
+    # Get the first achievement for a specific comment
+    achievement = insights["achievements"][0] if insights["achievements"] else "Future Legend"
+    
+    if beauty_score >= 9.0:
+        if age < 25:
+            return f"🔥 HOLY MOLY! {achievement}! This is absolutely INSANE! 🔥"
+        else:
+            return f"👑 WTF! {achievement}! You're the real deal! 👑"
+    elif beauty_score >= 8.0:
+        return f"🌟 DAMN! {achievement}! This is next level! 🌟"
+    elif beauty_score >= 7.0:
+        return f"💫 WOW! {achievement}! You're going places! 💫"
+    elif beauty_score >= 6.0:
+        return f"✨ NICE! {achievement}! You've got potential! ✨"
+    else:
+        return f"💎 COOL! {achievement}! You're unique! 💎"
+
 @app.on_event("startup")
 async def startup_event():
     """Load celebrities on startup"""
@@ -864,11 +1045,11 @@ async def analyze_face(file: UploadFile = File(...)):
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
             
-            # Generate CRAZY fun insights
-            insights = generate_crazy_fun_insights(age, gender, beauty_score, emotion, facial_features)
+            # Generate smart, real insights
+            insights = generate_smart_real_insights(age, gender, beauty_score, emotion, facial_features)
             
-            # Generate CRAZY fun comment
-            fun_comment = generate_crazy_fun_comment(beauty_score, insights, age, gender)
+            # Generate smart comment
+            fun_comment = generate_smart_comment(beauty_score, insights, age, gender)
             
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
