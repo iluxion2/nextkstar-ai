@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   title: 'AI Face Analysis - Beauty Score & Celebrity Matches',
   description: 'Discover your beauty score, celebrity matches, and cultural bias insights through our revolutionary AI technology.',
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/images/favicon.fav.png',
+    shortcut: '/images/favicon.fav.png',
+    apple: '/images/favicon.fav.png',
   },
 }
 
