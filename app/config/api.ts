@@ -10,8 +10,8 @@ const getApiBaseUrl = () => {
   
   // Check if we're in production (deployed site)
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-    // Use Railway deployment URL (will be updated after deployment)
-    return 'https://nextkstar-backend-production.up.railway.app'
+    // Use Render deployment URL (will be updated after deployment)
+    return 'https://nextkstar-ai-1.onrender.com'
   }
   // Local development
   return 'http://localhost:8000'
