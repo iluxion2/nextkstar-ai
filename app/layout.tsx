@@ -7,8 +7,35 @@ import Footer from './components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Face Analysis - Beauty Score & Celebrity Matches',
-  description: 'Discover your beauty score, celebrity matches, and cultural bias insights through our revolutionary AI technology.',
+  title: 'NextKStar - AI Face Analysis & Beauty Score | Celebrity Matches',
+  description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights. Free face analysis with celebrity matching technology.',
+  keywords: 'AI face analysis, beauty score, celebrity matches, face recognition, beauty calculator, kstar, nextkstar, beauty AI, face beauty test, celebrity lookalike finder',
+  authors: [{ name: 'NextKStar Team' }],
+  creator: 'NextKStar',
+  publisher: 'NextKStar',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'NextKStar - AI Face Analysis & Beauty Score',
+    description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights.',
+    url: 'https://nextkstar.com',
+    siteName: 'NextKStar',
+    images: [
+      {
+        url: '/images/favicon.fav.png',
+        width: 1200,
+        height: 630,
+        alt: 'NextKStar AI Face Analysis',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NextKStar - AI Face Analysis & Beauty Score',
+    description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights.',
+    images: ['/images/favicon.fav.png'],
+  },
   icons: {
     icon: '/images/favicon.fav.png',
     shortcut: '/images/favicon.fav.png',
