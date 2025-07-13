@@ -737,10 +737,10 @@ export default function AnalysisPage() {
               />
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              {getTranslation('Upload Your Photo', language)}
+              {getTranslation('How Hot Am I? AI Attractiveness Test', language)}
             </h2>
             <p className="text-gray-600">
-              {getTranslation('Get detailed AI analysis of your facial features, beauty score, and celebrity matches', language)}
+              {getTranslation('Take our AI attractiveness test to get your beauty score, find your celebrity lookalike from BTS, BLACKPINK, and kpop stars, and discover k-beauty insights', language)}
             </p>
           </div>
 
@@ -815,7 +815,7 @@ export default function AnalysisPage() {
                   ) : (
                     <>
                       <Sparkles size={20} />
-                      <span>{getTranslation('Start Analysis', language)}</span>
+                      <span>{getTranslation('Start Attractiveness Test', language)}</span>
                     </>
                   )}
                 </button>

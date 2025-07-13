@@ -5,6 +5,7 @@ import ConsentWrapper from './components/ConsentWrapper'
 import Footer from './components/Footer'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
+import GoogleSearchConsole from './components/GoogleSearchConsole'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://nextkstar.com'),
   title: 'KStar - AI Face Analysis & Beauty Score | Celebrity Matches',
   description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights. Free face analysis with celebrity matching technology.',
-  keywords: 'AI face analysis, beauty score, celebrity matches, face recognition, beauty calculator, kstar, nextkstar, beauty AI, face beauty test, celebrity lookalike finder',
+  keywords: 'how hot am i, attractiveness test, beauty score, celebrity lookalike, k-beauty, kpop, BTS, BLACKPINK, Jennie, boyfriend, girlfriend, AI face analysis, face recognition, beauty calculator, kstar, nextkstar, beauty AI, face beauty test, celebrity lookalike finder, hot or not, am i attractive, beauty rating, korean beauty, k-pop idols, BTS members, BLACKPINK members, relationship advice, dating tips',
   authors: [{ name: 'KStar Team' }],
   creator: 'KStar',
   publisher: 'KStar',
@@ -57,6 +58,7 @@ export default function RootLayout({
       <head>
         <StructuredData />
         <GoogleAnalytics />
+        <GoogleSearchConsole />
       </head>
       <body className={inter.className}>
         <ConsentWrapper>
