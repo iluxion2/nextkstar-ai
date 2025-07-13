@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { Sparkles, Camera, Brain, TrendingUp, ArrowRight } from 'lucide-react'
+import { getTranslation } from '../app/utils/translations'
 
 interface HeroSectionProps {
   onGetStarted: () => void
+  language?: string
 }
 
-export default function HeroSection({ onGetStarted }: HeroSectionProps) {
+export default function HeroSection({ onGetStarted, language = 'en' }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
       {/* Background Elements */}
@@ -26,7 +28,7 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
         >
           <Sparkles className="w-4 h-4 text-beauty-500" />
           <span className="text-sm font-medium text-gray-700">
-            Revolutionary AI-Powered Face Analysis
+            {getTranslation('Revolutionary AI-Powered Face Analysis', language)}
           </span>
         </motion.div>
 
@@ -37,9 +39,9 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
           transition={{ delay: 0.3 }}
           className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
         >
-          <span className="gradient-text">Sociotechnical Mirror</span>
+          <span className="gradient-text">{getTranslation('Sociotechnical Mirror', language)}</span>
           <br />
-          <span className="text-gray-800">for the Digital Age</span>
+          <span className="text-gray-800">{getTranslation('for the Digital Age', language)}</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -49,8 +51,7 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
           transition={{ delay: 0.4 }}
           className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed"
         >
-          Explore beauty bias, digital identity, and media influence through our revolutionary AI-powered facial analysis platform. 
-          Get your beauty score, celebrity lookalikes, and bias analysis.
+          {getTranslation('Explore beauty bias, digital identity, and media influence through our revolutionary AI-powered facial analysis platform. Get your beauty score, celebrity lookalikes, and bias analysis.', language)}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -66,7 +67,7 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
             onClick={onGetStarted}
             className="group beauty-gradient text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center space-x-2"
           >
-            <span>Start Your Analysis</span>
+            <span>{getTranslation('Start Your Analysis', language)}</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </motion.button>
           
@@ -76,7 +77,7 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
             className="group border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg hover:border-beauty-300 hover:text-beauty-600 transition-all duration-300 flex items-center space-x-2"
           >
             <Camera className="w-5 h-5" />
-            <span>Watch Demo</span>
+            <span>{getTranslation('Watch Demo', language)}</span>
           </motion.button>
         </motion.div>
 
@@ -89,15 +90,15 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
         >
           <div className="text-center">
             <div className="text-3xl font-bold gradient-text mb-2">10K+</div>
-            <div className="text-gray-600">Faces Analyzed</div>
+            <div className="text-gray-600">{getTranslation('Faces Analyzed', language)}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold gradient-text mb-2">95%</div>
-            <div className="text-gray-600">Accuracy Rate</div>
+            <div className="text-gray-600">{getTranslation('Accuracy Rate', language)}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold gradient-text mb-2">50+</div>
-            <div className="text-gray-600">Celebrity Matches</div>
+            <div className="text-gray-600">{getTranslation('Celebrity Matches', language)}</div>
           </div>
         </motion.div>
 
@@ -113,8 +114,8 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
               <Brain className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-gray-900">AI Beauty Score</div>
-              <div className="text-sm text-gray-600">Advanced facial analysis</div>
+              <div className="font-semibold text-gray-900">{getTranslation('AI Beauty Score', language)}</div>
+              <div className="text-sm text-gray-600">{getTranslation('Advanced facial analysis', language)}</div>
             </div>
           </div>
           
@@ -123,8 +124,8 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Bias Analysis</div>
-              <div className="text-sm text-gray-600">Cultural perception insights</div>
+              <div className="font-semibold text-gray-900">{getTranslation('Bias Analysis', language)}</div>
+              <div className="text-sm text-gray-600">{getTranslation('Cultural perception insights', language)}</div>
             </div>
           </div>
           
@@ -133,8 +134,8 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Celebrity Match</div>
-              <div className="text-sm text-gray-600">Find your lookalikes</div>
+              <div className="font-semibold text-gray-900">{getTranslation('Celebrity Match', language)}</div>
+              <div className="text-sm text-gray-600">{getTranslation('Find your lookalikes', language)}</div>
             </div>
           </div>
         </motion.div>

@@ -30,6 +30,34 @@ export default function CareersPage() {
     },
     {
       id: 3,
+      title: "Social Media Manager",
+      department: "Marketing",
+      location: "Remote",
+      type: "Full-time",
+      description: "Lead our social media strategy and create engaging content that showcases our AI beauty analysis platform.",
+      requirements: [
+        "3+ years experience in social media marketing",
+        "Experience with Instagram, TikTok, YouTube, and Twitter",
+        "Strong content creation and copywriting skills",
+        "Understanding of beauty and tech industry trends"
+      ]
+    },
+    {
+      id: 4,
+      title: "Content Creator & Influencer Relations",
+      department: "Marketing",
+      location: "Remote",
+      type: "Full-time",
+      description: "Create viral content and build relationships with beauty influencers and content creators.",
+      requirements: [
+        "2+ years experience in content creation or influencer marketing",
+        "Strong understanding of beauty and K-pop culture",
+        "Experience with video editing and social media platforms",
+        "Excellent communication and relationship-building skills"
+      ]
+    },
+    {
+      id: 5,
       title: "Product Manager",
       department: "Product",
       location: "San Francisco",
@@ -43,7 +71,7 @@ export default function CareersPage() {
       ]
     },
     {
-      id: 4,
+      id: 6,
       title: "UX/UI Designer",
       department: "Design",
       location: "Remote",
@@ -57,7 +85,7 @@ export default function CareersPage() {
       ]
     },
     {
-      id: 5,
+      id: 7,
       title: "Data Scientist",
       department: "Data Science",
       location: "Remote",
@@ -68,6 +96,62 @@ export default function CareersPage() {
         "Experience with Python, SQL, and statistical analysis",
         "Knowledge of machine learning and A/B testing",
         "Experience with big data technologies"
+      ]
+    },
+    {
+      id: 8,
+      title: "Software Engineering Intern",
+      department: "Engineering",
+      location: "Remote / San Francisco",
+      type: "Internship",
+      description: "Gain hands-on experience building features for our AI beauty analysis platform.",
+      requirements: [
+        "Currently pursuing Computer Science or related degree",
+        "Basic knowledge of React, Python, or machine learning",
+        "Strong problem-solving and learning abilities",
+        "Passion for AI and beauty technology"
+      ]
+    },
+    {
+      id: 9,
+      title: "Marketing & Social Media Intern",
+      department: "Marketing",
+      location: "Remote",
+      type: "Internship",
+      description: "Learn social media marketing and content creation in the beauty tech industry.",
+      requirements: [
+        "Currently pursuing Marketing, Communications, or related degree",
+        "Active on social media platforms (Instagram, TikTok, YouTube)",
+        "Creative mindset and strong writing skills",
+        "Interest in beauty, K-pop, and AI technology"
+      ]
+    },
+    {
+      id: 10,
+      title: "Data Science Intern",
+      department: "Data Science",
+      location: "Remote",
+      type: "Internship",
+      description: "Work with real data to improve our AI models and analysis algorithms.",
+      requirements: [
+        "Currently pursuing Data Science, Statistics, or related degree",
+        "Basic knowledge of Python and machine learning",
+        "Strong analytical and mathematical skills",
+        "Interest in facial analysis and beauty AI"
+      ]
+    },
+    {
+      id: 11,
+      title: "UI/UX Design Intern",
+      department: "Design",
+      location: "Remote",
+      type: "Internship",
+      description: "Create beautiful user interfaces and improve user experience for our platform.",
+      requirements: [
+        "Currently pursuing Design, HCI, or related degree",
+        "Basic knowledge of Figma or similar design tools",
+        "Strong visual design and user empathy skills",
+        "Portfolio of design projects (even class projects)"
       ]
     }
   ]
@@ -152,6 +236,23 @@ export default function CareersPage() {
         {/* Job Listings */}
         <div>
           <h2 className="text-3xl font-semibold text-gray-900 mb-8 text-center">Open Positions</h2>
+          
+          {/* Filter Tabs */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            <button className="px-4 py-2 rounded-full bg-purple-600 text-white font-semibold">
+              All Positions
+            </button>
+            <button className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
+              Full-time
+            </button>
+            <button className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
+              Internships
+            </button>
+            <button className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300">
+              Social Media
+            </button>
+          </div>
+
           <div className="space-y-6">
             {jobListings.map((job) => (
               <div key={job.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
@@ -163,10 +264,16 @@ export default function CareersPage() {
                       <span>•</span>
                       <span>{job.location}</span>
                       <span>•</span>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">{job.type}</span>
+                      <span className={`px-2 py-1 rounded-full ${
+                        job.type === 'Internship' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {job.type}
+                      </span>
                     </div>
                   </div>
-                  <button className="mt-4 md:mt-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all">
+                  <button className="mt-4 md:mt-0 bg-[#1da1f2] hover:bg-[#1991da] text-white px-6 py-2 rounded-lg font-semibold transition-all">
                     Apply Now
                   </button>
                 </div>
@@ -181,6 +288,44 @@ export default function CareersPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Internship Highlight */}
+        <div className="mb-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-6 text-center">Internship Program</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Why Intern With Us?</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Work on real AI projects that impact millions of users</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Mentorship from industry experts in AI and beauty tech</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Flexible remote work with competitive stipend</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Potential for full-time offers after graduation</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Program Details</h3>
+              <div className="space-y-3 text-gray-700">
+                <p><strong>Duration:</strong> 3-6 months (flexible)</p>
+                <p><strong>Start Date:</strong> Rolling applications</p>
+                <p><strong>Location:</strong> Remote (US-based preferred)</p>
+                <p><strong>Stipend:</strong> Competitive monthly compensation</p>
+                <p><strong>Perks:</strong> Free beauty analysis credits, team events, learning resources</p>
+              </div>
+            </div>
           </div>
         </div>
 

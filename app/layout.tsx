@@ -9,6 +9,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'AI Face Analysis - Beauty Score & Celebrity Matches',
   description: 'Discover your beauty score, celebrity matches, and cultural bias insights through our revolutionary AI technology.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({

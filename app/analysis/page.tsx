@@ -21,7 +21,8 @@ import {
   Trophy,
   User,
   LogIn,
-  X
+  X,
+  UserIcon
 } from 'lucide-react'
 import Image from 'next/image'
 // Removed import - using public path instead
@@ -37,10 +38,10 @@ import LanguageSelector from '../components/LanguageSelector'
 import AdSense from '../components/AdSense'
 import { getTranslation } from '../utils/translations'
 import { useRouter } from 'next/navigation'
-import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword, signInAnonymously } from "firebase/auth";
 import { auth } from "../firebase";
 import { db } from "../firebase";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore";
 import API_ENDPOINTS from '../config/api'
 
 interface AnalysisResult {
@@ -72,13 +73,53 @@ interface AnalysisResult {
   age?: number; // Added for new cards
 }
 
+// Utility to generate a consistent color from a string
+function stringToColor(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const color = `hsl(${hash % 360}, 70%, 60%)`;
+  return color;
+}
+
+// UserAvatar component
+function UserAvatar({ user, size = 32 }: { user: any, size?: number }) {
+  if (user.photoURL) {
+    return (
+      <img
+        src={user.photoURL}
+        alt="Profile"
+        className={`rounded-full object-cover`}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  const name = user.displayName || user.email || '';
+  const letter = name.charAt(0).toUpperCase();
+  const bgColor = stringToColor(user.uid || name);
+  return (
+    <div
+      className="rounded-full flex items-center justify-center text-white font-bold"
+      style={{ background: bgColor, width: size, height: size, fontSize: size * 0.6 }}
+    >
+      {letter}
+    </div>
+  );
+}
+
 export default function AnalysisPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState('')
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [showWebcam, setShowWebcam] = useState(false)
-  const [language, setLanguage] = useState('en')
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('language') || 'en'
+    }
+    return 'en'
+  })
   const [showConfetti, setShowConfetti] = useState(false)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [faceDetectionError, setFaceDetectionError] = useState<string | null>(null)
@@ -87,6 +128,7 @@ export default function AnalysisPage() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Helper to check if user is a real (non-anonymous) user
   const isRealUser = user && user.providerData && user.providerData.length > 0;
@@ -95,7 +137,14 @@ export default function AnalysisPage() {
   // Optionally, you can add a useEffect to listen for auth state changes (for sign in/out):
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser);
       setUser(firebaseUser);
+      // If not signed in, sign in anonymously
+      if (!firebaseUser) {
+        signInAnonymously(auth).catch((err) => {
+          console.error('Anonymous sign-in error:', err);
+        });
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -106,6 +155,13 @@ export default function AnalysisPage() {
       return () => clearTimeout(timer)
     }
   }, [showConfetti])
+
+  // Save language to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', language)
+    }
+  }, [language])
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -221,6 +277,46 @@ export default function AnalysisPage() {
       setShowConfetti(true)
       setAnalysisProgress('')
       
+      // Save analysis to Firebase
+      try {
+        const analysisData = {
+          userId: user?.uid || 'anonymous',
+          userEmail: user?.email || null,
+          userDisplayName: user?.displayName || null,
+          isGuest: !isRealUser,
+          beautyScore: Math.round(transformedResult.beautyScore * 10),
+          facialFeatures: transformedResult.facialFeatures,
+          personalityTraits: transformedResult.personalityTraits,
+          biasAnalysis: transformedResult.biasAnalysis,
+          celebrityMatches: transformedResult.celebrityMatches,
+          age: transformedResult.age,
+          createdAt: Timestamp.now(),
+          imageData: selectedImage || null // Store full image data for leaderboard profile pic
+        }
+        await addDoc(collection(db, "Analysis"), analysisData)
+        console.log('Analysis saved to Firebase')
+
+        // Leaderboard logic
+        const leaderboardId = user?.uid || user?.email || 'anonymous';
+        const leaderboardRef = doc(db, "Leaderboard", leaderboardId);
+        const leaderboardSnap = await getDoc(leaderboardRef);
+        if (!leaderboardSnap.exists() || (leaderboardSnap.data().beautyScore ?? 0) < analysisData.beautyScore) {
+          await setDoc(leaderboardRef, {
+            userId: analysisData.userId,
+            userEmail: analysisData.userEmail,
+            userDisplayName: analysisData.userDisplayName,
+            isGuest: analysisData.isGuest,
+            beautyScore: analysisData.beautyScore,
+            imageData: analysisData.imageData,
+            createdAt: Timestamp.now()
+          });
+          console.log('Leaderboard updated for user', leaderboardId);
+        }
+      } catch (error) {
+        console.error('Error saving analysis to Firebase:', error)
+        // Don't show error to user, just log it
+      }
+      
       toast.success(getTranslation('Analysis completed!', language))
     } catch (error) {
       console.error('Analysis error:', error)
@@ -292,49 +388,53 @@ export default function AnalysisPage() {
         {showConfetti && <Confetti />}
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 space-y-4 md:space-y-0">
             <button
               onClick={resetAnalysis}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors self-start"
             >
               <ArrowLeft size={20} />
-              <span>{getTranslation('New Analysis', language)}</span>
+              <span className="hidden sm:inline">{getTranslation('New Analysis', language)}</span>
+              <span className="sm:hidden">New</span>
             </button>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between md:justify-end space-x-2 md:space-x-4">
               <LanguageSelector currentLanguage={language} onLanguageChange={setLanguage} />
               
               {/* Auth Buttons */}
               {!isRealUser ? (
-                <div className="flex items-center space-x-2">
-              <button
+                <div className="flex items-center space-x-1 md:space-x-2">
+                  <button
                     onClick={() => setShowSignUp(true)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors text-white"
+                    className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-2 rounded-full transition-colors text-white text-sm md:text-base"
                     style={{ backgroundColor: '#ff5a8d' }}
                     onMouseOver={e => (e.currentTarget.style.backgroundColor = '#ffc3bb')}
                     onMouseOut={e => (e.currentTarget.style.backgroundColor = '#ff5a8d')}
                   >
-                    {getTranslation('Sign Up', language)}
+                    <span className="hidden sm:inline">{getTranslation('Sign Up', language)}</span>
+                    <span className="sm:hidden">Sign Up</span>
                   </button>
                   <button
                     onClick={() => setShowLogin(true)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full font-semibold transition-colors"
+                    className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-2 rounded-full font-semibold transition-colors text-sm md:text-base"
                     style={{ color: '#1da1f2', backgroundColor: 'transparent', border: 'none' }}
                     onMouseOver={e => (e.currentTarget.style.backgroundColor = '#f3f4f6')}
                     onMouseOut={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    {getTranslation('Login', language)}
-              </button>
-            </div>
+                    <span className="hidden sm:inline">{getTranslation('Login', language)}</span>
+                    <span className="sm:hidden">Login</span>
+                  </button>
+                </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Welcome, {user.displayName || user.email}</span>
                   <button
-                    onClick={() => auth.signOut()}
-                    className="px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors text-sm md:text-base"
+                    onClick={() => setShowProfileModal(true)}
                   >
-                    Sign Out
+                    <UserAvatar user={user} size={24} />
+                    <span className="hidden sm:inline">{user.displayName || user.email}</span>
+                    <span className="sm:hidden">{user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'User'}</span>
                   </button>
-          </div>
+                </div>
               )}
             </div>
           </div>
@@ -344,7 +444,7 @@ export default function AnalysisPage() {
               <img
                 src={selectedImage}
                 alt="Uploaded"
-                className="w-80 h-80 object-cover rounded-2xl shadow-lg border-4 border-white"
+                className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-2xl shadow-lg border-4 border-white"
               />
             </div>
           )}
@@ -365,12 +465,12 @@ export default function AnalysisPage() {
                     alt="Lucas" 
                     width={50}
                     height={50}
-                    className="object-cover rounded-full w-14 h-14" 
+                    className="object-cover rounded-full w-12 h-12 md:w-14 md:h-14" 
                     priority
                   />
                 </div>
-                <div className="relative ml-3 bg-gray-50 rounded-2xl p-3 shadow-sm max-w-xs">
-                  <div className="text-sm text-gray-800">
+                <div className="relative ml-2 md:ml-3 bg-gray-50 rounded-2xl p-2 md:p-3 shadow-sm max-w-xs">
+                  <div className="text-xs md:text-sm text-gray-800">
                     {(() => {
                       if (percentile >= 95) {
                         return "OMG! You're literally K-pop idol material! SM, JYP, YG would be fighting to scout you! 🌟✨"
@@ -441,17 +541,18 @@ export default function AnalysisPage() {
           
           {/* Cards Section - Celebrity Match, Expected Age & Instagram Followers */}
           <div className="flex justify-center mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
+            {/* Desktop/Tablet Layout */}
+            <div className="hidden md:grid md:grid-cols-3 gap-6 max-w-4xl w-full">
               {/* Celebrity Match Card */}
               <div className="flex justify-center">
-              <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
-            </div>
+                <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
+              </div>
               {/* Expected Age Card */}
               <div className="bg-white rounded-xl p-4 text-center shadow-lg flex flex-col justify-center">
                 <h3 className="text-xl font-bold mb-4">Expected Age</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">
                   {typeof analysisResult.age === 'number' ? analysisResult.age : Math.round(20 + (analysisResult.beautyScore-5)*2)}
-          </div>
+                </div>
                 <div className="text-gray-500 text-sm">AI-estimated age</div>
               </div>
               {/* Instagram Followers Card */}
@@ -461,6 +562,50 @@ export default function AnalysisPage() {
                   {((Math.round(analysisResult.beautyScore*7+Math.random()*3)*1000)/1000).toFixed(1)}K
                 </div>
                 <div className="text-gray-500 text-sm">Estimated popularity</div>
+              </div>
+            </div>
+
+            {/* Mobile Layout */}
+            <div className="md:hidden w-full max-w-sm">
+              {/* Mobile Compact Cards */}
+              <div className="space-y-3">
+                {/* Beauty Score Card */}
+                <div className="bg-white rounded-xl p-4 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">Beauty Score</h3>
+                      <div className="text-3xl font-bold text-green-600">
+                        {Math.round(analysisResult.beautyScore * 10)}/100
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">Rank</div>
+                      <div className="text-lg font-bold text-gray-800">#{rank.toLocaleString()}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Age & Followers Row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white rounded-xl p-3 text-center shadow-lg">
+                    <h3 className="text-sm font-bold text-gray-700 mb-1">Age</h3>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {typeof analysisResult.age === 'number' ? analysisResult.age : Math.round(20 + (analysisResult.beautyScore-5)*2)}
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-xl p-3 text-center shadow-lg">
+                    <h3 className="text-sm font-bold text-gray-700 mb-1">Followers</h3>
+                    <div className="text-2xl font-bold text-pink-600">
+                      {((Math.round(analysisResult.beautyScore*7+Math.random()*3)*1000)/1000).toFixed(1)}K
+                    </div>
+                  </div>
+                </div>
+
+                {/* Celebrity Match Mobile */}
+                <div className="bg-white rounded-xl p-4 shadow-lg">
+                  <h3 className="text-lg font-bold text-gray-800 mb-3 text-center">Celebrity Match</h3>
+                  <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
+                </div>
               </div>
             </div>
           </div>
@@ -566,12 +711,12 @@ export default function AnalysisPage() {
             </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Welcome, {user.displayName || user.email}</span>
                   <button
-                    onClick={() => auth.signOut()}
-                    className="px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+                    onClick={() => setShowProfileModal(true)}
                   >
-                    Sign Out
+                    <UserAvatar user={user} size={32} />
+                    <span>{user.displayName || user.email}</span>
                   </button>
                 </div>
               )}
@@ -868,6 +1013,9 @@ export default function AnalysisPage() {
       {/* Modals */}
       {showSignUp && (<SignUpModal onClose={() => setShowSignUp(false)} onSwitch={() => { setShowSignUp(false); setShowLogin(true); }} />)}
       {showLogin && (<LoginModal onClose={() => setShowLogin(false)} onSwitch={() => { setShowLogin(false); setShowSignUp(true); }} />)}
+      {showProfileModal && user && (
+        <ProfileModal user={user} onClose={() => setShowProfileModal(false)} />
+      )}
       </div>
     </div>
   )
@@ -889,9 +1037,11 @@ function SignUpModal({ onClose, onSwitch }: { onClose: () => void, onSwitch?: ()
     setLoading(true);
     setError(null);
     try {
+      console.log('Starting Google signup...');
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      console.log('Google signup successful:', user);
       // Check if user doc exists
       const userDoc = await getDoc(doc(db, "Users", user.uid));
       if (!userDoc.exists()) {
@@ -902,6 +1052,7 @@ function SignUpModal({ onClose, onSwitch }: { onClose: () => void, onSwitch?: ()
       }
       onClose();
     } catch (err: any) {
+      console.error('Google signup error:', err);
       setError(err.message || 'Google sign-in failed');
     } finally {
       setLoading(false);
@@ -922,7 +1073,8 @@ function SignUpModal({ onClose, onSwitch }: { onClose: () => void, onSwitch?: ()
         username,
         email,
         birthday,
-        createdAt: new Date()
+        createdAt: new Date(),
+        photoURL: auth.currentUser?.photoURL || null
       });
       onClose();
     } catch (err: any) {
@@ -1064,7 +1216,8 @@ function GoogleUsernameModal({ user, onClose }: { user: any, onClose: () => void
         username,
         email: user.email || '',
         birthday,
-        createdAt: new Date()
+        createdAt: new Date(),
+        photoURL: user.photoURL || null
       });
       onClose();
     } catch (err: any) {
@@ -1205,6 +1358,155 @@ function LoginModal({ onClose, onSwitch }: { onClose: () => void, onSwitch?: () 
             Sign up
           </button>
         </div>
+      </div>
+    </div>
+  );
+} 
+
+function ProfileModal({ user, onClose }: { user: any, onClose: () => void }) {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [newUsername, setNewUsername] = useState(user.displayName || '');
+  const [newBirthday, setNewBirthday] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await updateProfile(auth.currentUser!, { displayName: newUsername });
+      await setDoc(doc(db, "Users", user.uid), {
+        username: newUsername,
+        email: user.email || '',
+        birthday: newBirthday,
+        updatedAt: new Date()
+      });
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await auth.signOut();
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+        >
+          <X size={24} />
+        </button>
+        <h2 className="text-3xl font-bold mb-6 text-center">Profile</h2>
+        <div className="flex flex-col items-center mb-6">
+          <UserAvatar user={user} size={96} />
+          <h3 className="text-2xl font-bold mb-2">{user.displayName || user.email}</h3>
+          <p className="text-gray-600 text-sm">@{user.displayName || user.email}</p>
+        </div>
+        <div className="w-full mb-6">
+          <h3 className="text-lg font-semibold mb-2">Account Details</h3>
+          <p className="text-gray-800 text-sm">Email: {user.email}</p>
+          <p className="text-gray-800 text-sm">Birthday: {user.birthday ? new Date(user.birthday).toLocaleDateString() : 'Not set'}</p>
+        </div>
+        <div className="flex flex-col space-y-4">
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="w-full bg-blue-600 text-white py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+            disabled={loading}
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition-colors"
+            disabled={loading}
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+      {showEditModal && (
+        <EditProfileModal
+          user={user}
+          newUsername={newUsername}
+          newBirthday={newBirthday}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSave}
+          loading={loading}
+          error={error}
+        />
+      )}
+    </div>
+  );
+}
+
+function EditProfileModal({ user, newUsername, newBirthday, onClose, onSave, loading, error }: {
+  user: any;
+  newUsername: string;
+  newBirthday: string;
+  onClose: () => void;
+  onSave: () => void;
+  loading: boolean;
+  error: string | null;
+}) {
+  const [username, setUsername] = useState(newUsername);
+  const [birthday, setBirthday] = useState(newBirthday);
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  };
+
+  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBirthday(e.target.value);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+        >
+          <X size={24} />
+        </button>
+        <h2 className="text-3xl font-bold mb-6 text-center">Edit Profile</h2>
+        <form className="space-y-4" onSubmit={handleSave}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={handleUsernameChange}
+            className="w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+            required
+          />
+          <input
+            type="date"
+            placeholder="Birthday"
+            value={birthday}
+            onChange={handleBirthdayChange}
+            className="w-full px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+            required
+          />
+          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </form>
       </div>
     </div>
   );

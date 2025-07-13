@@ -50,7 +50,9 @@ app.add_middleware(
         "http://localhost:3004",
         "https://nextkstar.com",
         "https://www.nextkstar.com",
-        "https://nextkstar-ai.onrender.com"
+        "https://nextkstar-ai.onrender.com",
+        "https://kstar-3ff0a.web.app",
+        "https://kstar-3ff0a.firebaseapp.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -85,8 +87,8 @@ def load_celebrities():
         logger.info(f"Loaded {len(celeb_names)} celebrity images")
     else:
         logger.warning("Celebrities directory not found")
-    celeb_names = []
-    celeb_images = []
+        celeb_names = []
+        celeb_images = []
 
 def find_celeb_info(name: str) -> Dict:
     """Find celebrity info from CSV data"""
@@ -200,21 +202,20 @@ async def startup_event():
 
 @app.get("/")
 async def root():
+    """Root endpoint with API status"""
     return {
-        "message": "AI Face Analysis API is running!", 
-        "celebrities_loaded": len(celeb_names), 
+        "message": "AI Face Analysis API is running!",
+        "celebrities_loaded": len(celeb_names),
         "csv_data_loaded": len(celeb_data),
-        "deepface_available": DEEPFACE_AVAILABLE
+        "deepface_available": DEEPFACE_AVAILABLE,
+        "opencv_available": True,
+        "insightface_available": INSIGHTFACE_AVAILABLE
     }
 
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy", 
-        "celebrities_count": len(celeb_names), 
-        "csv_records": len(celeb_data),
-        "deepface_available": DEEPFACE_AVAILABLE
-    }
+    """Health check endpoint"""
+    return {"status": "healthy", "timestamp": str(np.datetime64('now'))}
 
 @app.post("/analyze/")
 async def analyze_face(file: UploadFile = File(...)):
@@ -223,15 +224,19 @@ async def analyze_face(file: UploadFile = File(...)):
         # Validate file
         if not file.content_type or not file.content_type.startswith('image/'):
             raise HTTPException(status_code=400, detail="Please upload a valid image file (JPG, PNG, etc.)")
+        
         temp_path = f"temp_{int(time.time())}_{random.randint(1000, 9999)}.jpg"
+        
         try:
             contents = await file.read()
             with open(temp_path, "wb") as f:
                 f.write(contents)
+            
             # Read image for InsightFace
             img = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_COLOR)
             age = None
             gender = None
+            
             # Try InsightFace first
             if INSIGHTFACE_AVAILABLE and insightface_app is not None:
                 faces = insightface_app.get(img)
@@ -239,6 +244,7 @@ async def analyze_face(file: UploadFile = File(...)):
                     age = int(faces[0].age)
                     gender = "male" if faces[0].gender == 1 else "female"
                     logger.info(f"InsightFace: Age={age}, Gender={gender}")
+            
             # Fallback to DeepFace if needed
             if age is None or gender is None:
                 if DEEPFACE_AVAILABLE:
@@ -251,6 +257,7 @@ async def analyze_face(file: UploadFile = File(...)):
                 else:
                     age = 25
                     gender = 'Unknown'
+            
             # Emotion (DeepFace or default)
             emotion = 'neutral'
             if DEEPFACE_AVAILABLE:
@@ -261,6 +268,7 @@ async def analyze_face(file: UploadFile = File(...)):
                     emotion = result.get('dominant_emotion', 'neutral')
                 except Exception as e:
                     logger.warning(f"DeepFace emotion fallback failed: {e}")
+            
             # Calculate facial features (simplified for now)
             facial_features = {
                 "symmetry": random.uniform(70, 95),
@@ -268,10 +276,13 @@ async def analyze_face(file: UploadFile = File(...)):
                 "proportions": random.uniform(75, 90),
                 "expression": 85 if emotion == 'happy' else 75
             }
+            
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
+            
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
+            
             # Prepare response
             response = {
                 "success": True,
@@ -286,14 +297,19 @@ async def analyze_face(file: UploadFile = File(...)):
                 "lookalike": lookalike_result,
                 "timestamp": str(np.datetime64('now'))
             }
+            
             logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
             return response
+            
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             gc.collect()
+            
     except Exception as e:
         logger.error(f"Error in face analysis: {e}")
+        
+        # Provide funny error messages
         error_messages = [
             "Oops! Our AI had a brain fart! 🤯 Please try again with a different image!",
             "Our AI is having a bad day! 😤 Maybe try a different photo?",
@@ -301,6 +317,7 @@ async def analyze_face(file: UploadFile = File(...)):
             "Our AI is being dramatic today! 😅 Try uploading a different image!",
             "Our AI says 'I give up!' 🙈 Please try with a different photo!"
         ]
+        
         raise HTTPException(
             status_code=500, 
             detail=random.choice(error_messages)
@@ -308,18 +325,11 @@ async def analyze_face(file: UploadFile = File(...)):
 
 @app.get("/celebrities/")
 async def get_celebrities():
-    """Get list of loaded celebrities with CSV data"""
-    celebrities = []
-    for i, (name, img) in enumerate(zip(celeb_names, celeb_images)):
-        info = find_celeb_info(name)
-        celebrities.append({
-            "name": name,
-            "image": img,
-            "info": info
-        })
+    """Get list of loaded celebrities"""
     return {
         "count": len(celeb_names),
-        "celebrities": celebrities
+        "names": celeb_names,
+        "images": celeb_images
     }
 
 @app.get("/csv-stats/")
@@ -332,10 +342,6 @@ async def get_csv_stats():
 
 @app.post("/reload-celebrities/")
 async def reload_celebrities():
-    """Reload celebrity database"""
+    """Reload celebrity data"""
     load_celebrities()
-    return {"message": f"Reloaded {len(celeb_names)} celebrities and {len(celeb_data)} CSV records"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    return {"message": "Celebrities reloaded", "count": len(celeb_names)} 

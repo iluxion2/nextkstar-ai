@@ -1,0 +1,16 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+numpy==1.24.3
+pandas==2.0.3
+Pillow==10.0.1
+requests==2.31.0
+python-dotenv==1.0.0
+lxml==4.9.3
+beautifulsoup4==4.12.2
+setuptools>=65.0.0
+# DeepFace and OpenCV for face analysis (now with premium Render)
+deepface==0.0.79
+opencv-python-headless==4.8.1.78
+# InsightFace for highly accurate age estimation
+insightface==0.7.3 

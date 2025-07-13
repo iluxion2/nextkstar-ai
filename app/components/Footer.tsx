@@ -2,9 +2,24 @@
 
 import Link from 'next/link'
 import { Instagram, Mail, Shield, Lock } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { getTranslation } from '../utils/translations'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('language') || 'en'
+    }
+    return 'en'
+  })
+
+  // Save language to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', language)
+    }
+  }, [language])
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -21,7 +36,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              Discover your beauty score, celebrity matches, and cultural bias insights through our revolutionary AI technology.
+              {getTranslation('Discover your beauty score, celebrity matches, and cultural bias insights through our revolutionary AI technology.', language)}
             </p>
             
             {/* Social Media - Instagram Only */}
@@ -39,26 +54,26 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4">{getTranslation('Quick Links', language)}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About
+                  {getTranslation('About', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
-                  FAQ
+                  {getTranslation('FAQ', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
-                  Contact
+                  {getTranslation('Contact', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/careers" className="text-gray-300 hover:text-white transition-colors">
-                  Careers
+                  {getTranslation('Careers', language)}
                 </Link>
               </li>
             </ul>
@@ -66,26 +81,26 @@ export default function Footer() {
 
           {/* Legal & Compliance */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Legal & Privacy</h4>
+            <h4 className="text-lg font-semibold mb-4">{getTranslation('Legal & Privacy', language)}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
-                  Privacy Policy
+                  {getTranslation('Privacy Policy', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
-                  Terms
+                  {getTranslation('Terms', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/ai-disclosure" className="text-gray-300 hover:text-white transition-colors">
-                  AI Disclosure
+                  {getTranslation('AI Disclosure', language)}
                 </Link>
               </li>
               <li>
                 <Link href="/cookies" className="text-gray-300 hover:text-white transition-colors">
-                  Cookies
+                  {getTranslation('Cookies', language)}
                 </Link>
               </li>
             </ul>
@@ -98,11 +113,11 @@ export default function Footer() {
             <div className="flex items-center space-x-6 mb-4 md:mb-0">
               <div className="flex items-center space-x-2 text-green-400">
                 <Shield size={20} />
-                <span className="text-sm font-medium">GDPR Compliant</span>
+                <span className="text-sm font-medium">{getTranslation('GDPR Compliant', language)}</span>
               </div>
               <div className="flex items-center space-x-2 text-blue-400">
                 <Lock size={20} />
-                <span className="text-sm font-medium">SSL Secure</span>
+                <span className="text-sm font-medium">{getTranslation('SSL Secure', language)}</span>
               </div>
             </div>
             
@@ -123,7 +138,7 @@ export default function Footer() {
       <div className="border-t border-gray-800 bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="text-center text-gray-400 text-sm">
-            © {currentYear} KStar. All rights reserved.
+            © {currentYear} KStar. {getTranslation('All rights reserved.', language)}
           </div>
         </div>
       </div>

@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "kstar-3ff0a"
-  }
+  },
+  "targets": {
+    "kstar-3ff0a": {
+      "hosting": {
+        "main": [
+          "kstar-3ff0a"
+        ],
+        "nextkstar": [
+          "nextkstar"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
