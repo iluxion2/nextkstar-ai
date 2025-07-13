@@ -7,24 +7,25 @@ import Footer from './components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'NextKStar - AI Face Analysis & Beauty Score | Celebrity Matches',
+  metadataBase: new URL('https://nextkstar.com'),
+  title: 'KStar - AI Face Analysis & Beauty Score | Celebrity Matches',
   description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights. Free face analysis with celebrity matching technology.',
   keywords: 'AI face analysis, beauty score, celebrity matches, face recognition, beauty calculator, kstar, nextkstar, beauty AI, face beauty test, celebrity lookalike finder',
-  authors: [{ name: 'NextKStar Team' }],
-  creator: 'NextKStar',
-  publisher: 'NextKStar',
+  authors: [{ name: 'KStar Team' }],
+  creator: 'KStar',
+  publisher: 'KStar',
   robots: 'index, follow',
   openGraph: {
-    title: 'NextKStar - AI Face Analysis & Beauty Score',
+    title: 'KStar - AI Face Analysis & Beauty Score',
     description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights.',
     url: 'https://nextkstar.com',
-    siteName: 'NextKStar',
+    siteName: 'KStar',
     images: [
       {
         url: '/images/favicon.fav.png',
         width: 1200,
         height: 630,
-        alt: 'NextKStar AI Face Analysis',
+        alt: 'KStar AI Face Analysis',
       },
     ],
     locale: 'en_US',
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NextKStar - AI Face Analysis & Beauty Score',
+    title: 'KStar - AI Face Analysis & Beauty Score',
     description: 'Get your AI beauty score, find celebrity lookalikes, and explore beauty bias insights.',
     images: ['/images/favicon.fav.png'],
   },
