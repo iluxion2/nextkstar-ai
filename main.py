@@ -209,7 +209,8 @@ async def root():
         "csv_data_loaded": len(celeb_data),
         "deepface_available": DEEPFACE_AVAILABLE,
         "opencv_available": True,
-        "insightface_available": INSIGHTFACE_AVAILABLE
+        "insightface_available": INSIGHTFACE_AVAILABLE,
+        "version": "1.1.0"  # Force new deployment
     }
 
 @app.get("/health")
