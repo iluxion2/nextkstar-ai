@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import ConsentWrapper from './components/ConsentWrapper'
 import Footer from './components/Footer'
+import StructuredData from './components/StructuredData'
+import GoogleAnalytics from './components/GoogleAnalytics'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -42,6 +44,7 @@ export const metadata: Metadata = {
     shortcut: '/images/favicon.fav.png',
     apple: '/images/favicon.fav.png',
   },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({
@@ -51,6 +54,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <StructuredData />
+        <GoogleAnalytics />
+      </head>
       <body className={inter.className}>
         <ConsentWrapper>
           <div className="min-h-screen flex flex-col">

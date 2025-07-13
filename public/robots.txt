@@ -1,8 +1,37 @@
+# KStar AI Face Analysis - Robots.txt
 User-agent: *
 Allow: /
 
-# Sitemap
+# Disallow admin or private areas (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Sitemaps
 Sitemap: https://nextkstar.com/sitemap.xml
 
-# Crawl-delay
-Crawl-delay: 1 
+# Crawl-delay for all bots
+Crawl-delay: 1
+
+# Specific instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: / 
