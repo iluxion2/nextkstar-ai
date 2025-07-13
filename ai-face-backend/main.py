@@ -226,16 +226,16 @@ async def analyze_face(file: UploadFile = File(...)):
                 f.write(contents)
         
             # Analyze with DeepFace
-        logger.info("Starting DeepFace analysis...")
+            logger.info("Starting DeepFace analysis...")
             result = analyze_with_deepface(temp_path)
         
-        # Extract results
+            # Extract results
             if isinstance(result, list):
                 result = result[0]
         
-        age = result.get('age', 25)
+            age = result.get('age', 25)
             gender = result.get('gender', 'Unknown')
-        emotion = result.get('dominant_emotion', 'neutral')
+            emotion = result.get('dominant_emotion', 'neutral')
             
             # Calculate facial features (simplified for now)
             facial_features = {
@@ -245,29 +245,29 @@ async def analyze_face(file: UploadFile = File(...)):
                 "expression": 85 if emotion == 'happy' else 75
             }
         
-        # Calculate beauty score
+            # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
         
-        # Find celebrity lookalike
+            # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
         
-        # Prepare response
-        response = {
-            "success": True,
-            "analysis": {
-                "age": age,
-                "gender": gender,
-                "emotion": emotion,
+            # Prepare response
+            response = {
+                "success": True,
+                "analysis": {
+                    "age": age,
+                    "gender": gender,
+                    "emotion": emotion,
                     "race": "Unknown",
                     "beauty_score": round(beauty_score, 1),
                     "facial_features": facial_features
-            },
-            "lookalike": lookalike_result,
-            "timestamp": str(np.datetime64('now'))
-        }
+                },
+                "lookalike": lookalike_result,
+                "timestamp": str(np.datetime64('now'))
+            }
         
-        logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
-        return response
+            logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
+            return response
             
         finally:
             # Clean up temporary file
@@ -312,10 +312,10 @@ async def get_celebrities():
 @app.get("/csv-stats/")
 async def get_csv_stats():
     """Get CSV data statistics"""
-        return {
-            "total_records": len(celeb_data),
+    return {
+        "total_records": len(celeb_data),
         "sample_records": celeb_data[:5] if celeb_data else []
-        }
+    }
 
 @app.post("/reload-celebrities/")
 async def reload_celebrities():
