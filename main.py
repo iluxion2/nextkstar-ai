@@ -541,6 +541,244 @@ def generate_ai_fun_comment(beauty_score: float, insights: Dict, age: int, gende
     else:
         return f"{base_comment} You're going to achieve amazing things! 🌟"
 
+def generate_crazy_fun_insights(age: int, gender: str, beauty_score: float, emotion: str, facial_features: Dict) -> Dict:
+    """Generate absolutely WILD and FUNNY personality insights with pop culture references"""
+    
+    insights = {
+        "achievements": [],
+        "personality_traits": [],
+        "future_predictions": [],
+        "fun_facts": []
+    }
+    
+    # CRAZY Achievement predictions based on beauty score
+    if beauty_score >= 9.0:
+        insights["achievements"].extend([
+            "🔥 MrBeast's Secret Younger Brother - He's been hiding you this whole time!",
+            "👑 BTS's 8th Member - Taehyung's long-lost twin!",
+            "🎮 Squid Game Winner - You'd survive all the games with that face!",
+            "💎 K-pop Idol Material - SM Entertainment is already calling!",
+            "🌟 Netflix Star - Stranger Things season 5 needs you!",
+            "🎭 Hollywood's Next Big Thing - Tom Holland who?",
+            "💫 TikTok Famous - 10M followers by next week!"
+        ])
+    elif beauty_score >= 8.0:
+        insights["achievements"].extend([
+            "🎪 Circus Ringmaster - Your face commands attention!",
+            "🏆 America's Got Talent Winner - Simon Cowell would give you a golden buzzer!",
+            "🎵 K-pop Trainee - JYP is probably stalking your Instagram!",
+            "💍 Bachelor/Bachelorette Material - You'd break the internet!",
+            "🎬 Marvel Superhero - Captain America's replacement!",
+            "🌟 Disney Princess/Prince - Live-action remake incoming!",
+            "💪 Gym Motivation - You'd make everyone want to work out!"
+        ])
+    elif beauty_score >= 7.0:
+        insights["achievements"].extend([
+            "📚 Future Professor - Students would actually pay attention!",
+            "🎨 Art Museum Exhibit - Your face belongs in the Louvre!",
+            "💼 CEO Material - You'd make meetings actually fun!",
+            "🎭 Broadway Star - Hamilton 2.0 needs you!",
+            "🌟 Instagram Influencer - Brands would fight over you!",
+            "💕 Dating App Legend - You'd break Tinder's algorithm!",
+            "🎪 Life of Every Party - DJ Khaled would say 'Another one!'"
+        ])
+    elif beauty_score >= 6.0:
+        insights["achievements"].extend([
+            "💎 Hidden Gem - Like finding a diamond in a coal mine!",
+            "🎯 Goal Crusher - You'd make success look easy!",
+            "🌟 Late Bloomer - Like a fine wine, getting better with age!",
+            "💪 Confidence Builder - You'd make everyone feel better!",
+            "🎪 Party Starter - The energy you bring is unmatched!",
+            "💫 Unique Beauty - You're like a rare Pokemon!"
+        ])
+    else:
+        insights["achievements"].extend([
+            "💎 Diamond in the Rough - Like a treasure chest waiting to be opened!",
+            "🌱 Growth Mindset - You're like a plant, just need some water!",
+            "🎭 Character Actor - You'd play the cool side character!",
+            "💫 Late Bloomer - Like a butterfly, transformation incoming!",
+            "🌟 Hidden Potential - You're like a secret weapon!"
+        ])
+    
+    # WILD Personality traits based on facial features
+    if facial_features['symmetry'] > 90:
+        insights["personality_traits"].extend([
+            "🎯 Perfectly Balanced - Like Thanos, but actually balanced!",
+            "✨ Symmetrical King/Queen - Your face is like a math equation!",
+            "🌟 Harmony Master - You could solve world peace with that symmetry!"
+        ])
+    if facial_features['skinClarity'] > 90:
+        insights["personality_traits"].extend([
+            "✨ Flawless Skin - Like you were born with a filter!",
+            "💎 Crystal Clear - Your skin is like a diamond!",
+            "🌟 Glow Master - You're like a walking light bulb!"
+        ])
+    if facial_features['expression'] > 85:
+        insights["personality_traits"].extend([
+            "🎭 Expressive AF - Your face tells stories better than Netflix!",
+            "💫 Charisma Bomb - You could sell ice to a penguin!",
+            "🌟 Energy Explosion - You're like a human Red Bull!"
+        ])
+    if facial_features['proportions'] > 85:
+        insights["personality_traits"].extend([
+            "🎯 Perfect Proportions - Like you were designed by an architect!",
+            "🌟 Balanced AF - You're like a human golden ratio!",
+            "💎 Proportion Master - Your face is mathematically perfect!"
+        ])
+    
+    # CRAZY Future predictions
+    if beauty_score >= 9.0:
+        insights["future_predictions"].extend([
+            "🌟 Will become more famous than MrBeast - He'll be jealous!",
+            "💍 Will have 50 marriage proposals - Like a K-drama!",
+            "🏆 Will win every award ever - Oscar, Grammy, Nobel Prize!",
+            "📱 Will break the internet - Servers will crash because of you!",
+            "🎬 Will star in every movie - Hollywood will be obsessed!",
+            "💎 Will become a billionaire - Just by existing!"
+        ])
+    elif beauty_score >= 8.0:
+        insights["future_predictions"].extend([
+            "💼 Will become CEO of a Fortune 500 - Just by walking in!",
+            "🎭 Will win an Oscar - Academy will be like 'Who is this?!'",
+            "💕 Will have the most epic love story - Like a movie!",
+            "🌍 Will travel the world - Everyone will want to meet you!",
+            "🌟 Will become a legend - People will write songs about you!"
+        ])
+    else:
+        insights["future_predictions"].extend([
+            "💎 Will discover hidden talents - Like a superhero origin story!",
+            "🎯 Will achieve all goals - Success will be your middle name!",
+            "💪 Will overcome everything - Like a real-life Rocky!",
+            "🌟 Will inspire millions - You'll be like a motivational speaker!"
+        ])
+    
+    # ABSOLUTELY WILD Fun facts
+    if emotion == "happy":
+        insights["fun_facts"].extend([
+            "😊 Your smile could power a city - It's that bright!",
+            "🎉 You're like a walking party - Everywhere you go becomes fun!",
+            "💫 Your positive energy is contagious - Like a good virus!",
+            "🌟 You make everyone happy - Like a human antidepressant!"
+        ])
+    elif emotion == "neutral":
+        insights["fun_facts"].extend([
+            "🎭 You have mysterious vibes - Like a K-drama protagonist!",
+            "💎 You're like a hidden gem - People want to discover you!",
+            "🌙 You have calm energy - Like a zen master!",
+            "🎯 You're focused AF - Like a laser beam!"
+        ])
+    else:
+        insights["fun_facts"].extend([
+            "🎨 You have artistic depth - Like a walking museum!",
+            "💭 You're a deep thinker - Like a philosopher!",
+            "🎪 You have dramatic flair - Like a soap opera star!",
+            "💫 You're intriguing - Like a mystery novel!"
+        ])
+    
+    # Korean/US Culture specific insights
+    if age < 25:
+        insights["fun_facts"].extend([
+            "🎵 You're like a K-pop trainee - Ready to debut!",
+            "🚀 You're young and ambitious - Like a startup founder!",
+            "💫 You have that Gen Z energy - TikTok famous incoming!",
+            "🌟 You're like a Disney Channel star - Ready for your show!"
+        ])
+    elif age < 35:
+        insights["fun_facts"].extend([
+            "💼 You're like a K-drama lead - Ready for your love story!",
+            "🌍 You're worldly - Like a travel influencer!",
+            "🎯 You're goal-oriented - Like a life coach!",
+            "💪 You're confident - Like a motivational speaker!"
+        ])
+    else:
+        insights["fun_facts"].extend([
+            "🧠 You're wise - Like a sage!",
+            "🏠 You have life experience - Like a walking encyclopedia!",
+            "💎 You have mature beauty - Like fine wine!",
+            "🌟 You're inspirational - Like a mentor!"
+        ])
+    
+    # Gender-specific WILD insights
+    if gender.lower() in ['male', 'm']:
+        insights["fun_facts"].extend([
+            "💪 You're like a K-drama male lead - Ready for your love triangle!",
+            "🎯 You're goal-oriented - Like a CEO in training!",
+            "🛡️ You're protective - Like a superhero!",
+            "🌟 You have natural charisma - Like a rock star!"
+        ])
+    elif gender.lower() in ['female', 'f']:
+        insights["fun_facts"].extend([
+            "💎 You're like a K-drama female lead - Ready for your Cinderella story!",
+            "🎭 You're graceful - Like a ballerina!",
+            "💕 You have a warm heart - Like a Disney princess!",
+            "✨ You're naturally charming - Like a fairy tale character!"
+        ])
+    
+    return insights
+
+def generate_crazy_fun_comment(beauty_score: float, insights: Dict, age: int, gender: str) -> str:
+    """Generate absolutely WILD and FUNNY comments"""
+    
+    # CRAZY base comments
+    if beauty_score >= 9.0:
+        base_comments = [
+            "🔥 HOLY MOLY! You're like MrBeast's secret sibling! This is INSANE!",
+            "👑 WTF! You're literally BTS's 8th member! Taehyung who?!",
+            "🌟 OMG! You're like a K-pop idol that got lost! SM Entertainment is calling!",
+            "💎 STOP IT! You're too beautiful! This is illegal!",
+            "🎬 Hollywood is missing out! You're like a movie star!",
+            "💫 You're like a walking filter! This can't be real!"
+        ]
+    elif beauty_score >= 8.0:
+        base_comments = [
+            "🌟 DAMN! You're absolutely stunning! This is unfair!",
+            "💎 WOW! You're like a K-drama lead! Netflix needs you!",
+            "✨ You're gorgeous! Like actually gorgeous!",
+            "🎭 You're like a Disney character! This is crazy!",
+            "💫 You're beautiful! Like really beautiful!",
+            "🌟 You're stunning! Like actually stunning!"
+        ]
+    elif beauty_score >= 7.0:
+        base_comments = [
+            "💫 Fantastic! You're really pretty! Like actually pretty!",
+            "✨ You're lovely! Like really lovely!",
+            "🌟 You're beautiful! Like actually beautiful!",
+            "💎 You're attractive! Like really attractive!",
+            "🎭 You're cute! Like actually cute!",
+            "💫 You're pretty! Like really pretty!"
+        ]
+    elif beauty_score >= 6.0:
+        base_comments = [
+            "✨ Great! You have a unique look! Like really unique!",
+            "🌟 You're attractive! Like actually attractive!",
+            "💎 You're cute! Like really cute!",
+            "🎭 You're pretty! Like actually pretty!",
+            "💫 You're lovely! Like really lovely!",
+            "✨ You're beautiful! Like actually beautiful!"
+        ]
+    else:
+        base_comments = [
+            "💎 Beautiful! You have a special charm! Like really special!",
+            "🌟 You're unique! Like actually unique!",
+            "💫 You're lovely! Like really lovely!",
+            "✨ You're cute! Like actually cute!",
+            "🎭 You're pretty! Like actually pretty!",
+            "💎 You're beautiful! Like actually beautiful!"
+        ]
+    
+    # Add a random achievement or trait
+    all_insights = []
+    for category in insights.values():
+        all_insights.extend(category)
+    
+    if all_insights:
+        random_insight = random.choice(all_insights)
+        base_comment = random.choice(base_comments)
+        return f"{base_comment} {random_insight} 🔥💫👑"
+    else:
+        base_comment = random.choice(base_comments)
+        return f"{base_comment} You're going to be famous! 🌟💫👑"
+
 @app.on_event("startup")
 async def startup_event():
     """Load celebrities on startup"""
@@ -626,11 +864,11 @@ async def analyze_face(file: UploadFile = File(...)):
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
             
-            # Generate AI-powered personality insights
-            insights = generate_ai_personality_insights(age, gender, beauty_score, emotion, facial_features)
+            # Generate CRAZY fun insights
+            insights = generate_crazy_fun_insights(age, gender, beauty_score, emotion, facial_features)
             
-            # Generate AI-powered fun comment
-            fun_comment = generate_ai_fun_comment(beauty_score, insights, age, gender)
+            # Generate CRAZY fun comment
+            fun_comment = generate_crazy_fun_comment(beauty_score, insights, age, gender)
             
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
