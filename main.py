@@ -5,7 +5,13 @@ from PIL import Image
 import numpy as np
 import os
 import io
-import cv2
+# Import OpenCV with error handling
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"OpenCV not available: {e}")
+    CV2_AVAILABLE = False
 import pandas as pd
 from typing import List, Dict, Any
 import logging
@@ -90,11 +96,14 @@ def analyze_with_deepface(image_path: str):
         raise Exception("DeepFace is not available")
     
     try:
+        # Use different detector backend if OpenCV is not available
+        detector_backend = 'opencv' if CV2_AVAILABLE else 'mtcnn'
+        
         result = DeepFace.analyze(
             img_path=image_path,
             actions=['age', 'gender', 'emotion'],
             enforce_detection=False,
-            detector_backend='opencv',
+            detector_backend=detector_backend,
             silent=True
         )
         
@@ -193,7 +202,8 @@ async def root():
         "message": "AI Face Analysis API is running!", 
         "celebrities_loaded": len(celeb_names), 
         "csv_data_loaded": len(celeb_data),
-        "deepface_available": DEEPFACE_AVAILABLE
+        "deepface_available": DEEPFACE_AVAILABLE,
+        "opencv_available": CV2_AVAILABLE
     }
 
 @app.get("/health")
