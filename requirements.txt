@@ -9,5 +9,7 @@ python-dotenv==1.0.0
 lxml==4.9.3
 beautifulsoup4==4.12.2
 setuptools>=65.0.0
+# Use opencv-python instead of opencv-python-headless for better compatibility
+opencv-python==4.8.1.78
+# DeepFace with compatible dependencies
 deepface==0.0.79
-opencv-python-headless==4.8.1.78
