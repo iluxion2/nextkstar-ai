@@ -13,6 +13,8 @@ import math
 import random
 import gc
 import time
+import requests
+import json
 
 # Import DeepFace with error handling
 try:
@@ -343,6 +345,202 @@ def generate_fun_comment(beauty_score: float, insights: Dict) -> str:
     else:
         return f"💎 Beautiful! You have a special kind of charm! {random.choice(insights['achievements'])} waiting to happen! 🌱"
 
+def generate_ai_personality_insights(age: int, gender: str, beauty_score: float, emotion: str, facial_features: Dict) -> Dict:
+    """Generate real AI-powered personality insights based on analysis"""
+    
+    # Create a detailed prompt for the AI
+    prompt = f"""
+    Based on this facial analysis, generate fun and engaging personality insights:
+    
+    Age: {age} years old
+    Gender: {gender}
+    Beauty Score: {beauty_score}/10
+    Emotion: {emotion}
+    Facial Features:
+    - Symmetry: {facial_features['symmetry']:.1f}%
+    - Skin Clarity: {facial_features['skinClarity']:.1f}%
+    - Proportions: {facial_features['proportions']:.1f}%
+    - Expression: {facial_features['expression']:.1f}%
+    
+    Generate 4 categories of insights:
+    1. Achievements (like "Future K-pop Idol", "Class President Material")
+    2. Personality Traits (like "Natural Leader", "Creative Genius")
+    3. Future Predictions (like "Will become famous", "Will have amazing relationships")
+    4. Fun Facts (like "Your smile lights up rooms", "You have mysterious aura")
+    
+    Make them fun, engaging, and personalized to the analysis results. Include emojis and be encouraging!
+    """
+    
+    try:
+        # Try to use OpenAI API if available
+        api_key = os.getenv('OPENAI_API_KEY')
+        if api_key:
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'model': 'gpt-3.5-turbo',
+                'messages': [
+                    {
+                        'role': 'system',
+                        'content': 'You are a fun, encouraging AI that analyzes facial features and generates entertaining personality insights. Be creative, use emojis, and make people feel special!'
+                    },
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ],
+                'max_tokens': 500,
+                'temperature': 0.8
+            }
+            
+            response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
+            
+            if response.status_code == 200:
+                result = response.json()
+                ai_response = result['choices'][0]['message']['content']
+                
+                # Parse the AI response into structured format
+                return parse_ai_response(ai_response)
+        
+        # Fallback to local AI model or predefined responses
+        return generate_local_ai_insights(age, gender, beauty_score, emotion, facial_features)
+        
+    except Exception as e:
+        logger.warning(f"AI insight generation failed: {e}")
+        return generate_local_ai_insights(age, gender, beauty_score, emotion, facial_features)
+
+def parse_ai_response(ai_response: str) -> Dict:
+    """Parse AI response into structured format"""
+    try:
+        # Try to extract structured data from AI response
+        insights = {
+            "achievements": [],
+            "personality_traits": [],
+            "future_predictions": [],
+            "fun_facts": []
+        }
+        
+        # Simple parsing - look for patterns in the response
+        lines = ai_response.split('\n')
+        current_category = None
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+                
+            if 'achievement' in line.lower() or '1.' in line:
+                current_category = 'achievements'
+            elif 'personality' in line.lower() or 'trait' in line.lower() or '2.' in line:
+                current_category = 'personality_traits'
+            elif 'future' in line.lower() or 'prediction' in line.lower() or '3.' in line:
+                current_category = 'future_predictions'
+            elif 'fun fact' in line.lower() or '4.' in line:
+                current_category = 'fun_facts'
+            elif current_category and line.startswith('-') or line.startswith('•'):
+                insights[current_category].append(line[1:].strip())
+        
+        # If parsing failed, return the raw response
+        if not any(insights.values()):
+            insights["fun_facts"] = [ai_response]
+            
+        return insights
+        
+    except Exception as e:
+        logger.warning(f"Failed to parse AI response: {e}")
+        return {"fun_facts": [ai_response]}
+
+def generate_local_ai_insights(age: int, gender: str, beauty_score: float, emotion: str, facial_features: Dict) -> Dict:
+    """Generate intelligent insights using local analysis"""
+    
+    insights = {
+        "achievements": [],
+        "personality_traits": [],
+        "future_predictions": [],
+        "fun_facts": []
+    }
+    
+    # Intelligent achievement predictions based on multiple factors
+    if beauty_score >= 9.0 and facial_features['symmetry'] > 90:
+        insights["achievements"].append("👑 Future K-pop Idol - Your perfect symmetry is idol material!")
+    elif beauty_score >= 8.5 and facial_features['expression'] > 80:
+        insights["achievements"].append("🎭 Drama Club Star - Your expressive face is made for the stage!")
+    elif beauty_score >= 8.0 and facial_features['skinClarity'] > 90:
+        insights["achievements"].append("📸 Model Material - Your flawless skin is camera-ready!")
+    elif beauty_score >= 7.5 and facial_features['proportions'] > 85:
+        insights["achievements"].append("👥 Class President Material - Your balanced features show leadership!")
+    elif beauty_score >= 7.0:
+        insights["achievements"].append("📚 Future Tutor - Your approachable look makes you a natural teacher!")
+    else:
+        insights["achievements"].append("💎 Diamond in the Rough - Your unique beauty is special!")
+    
+    # Personality traits based on facial analysis
+    if facial_features['symmetry'] > 90:
+        insights["personality_traits"].append("🎯 Balanced & Harmonious - Your symmetrical features reflect inner peace!")
+    if facial_features['skinClarity'] > 90:
+        insights["personality_traits"].append("✨ Pure & Authentic - Your clear skin shows your genuine nature!")
+    if facial_features['expression'] > 85:
+        insights["personality_traits"].append("💫 Expressive & Charismatic - Your face tells amazing stories!")
+    if facial_features['proportions'] > 85:
+        insights["personality_traits"].append("🌟 Well-Proportioned - Your balanced features show good judgment!")
+    
+    # Age and gender specific insights
+    if age < 25 and beauty_score > 8.0:
+        insights["personality_traits"].append("🚀 Young & Ambitious - Your youthful beauty is full of potential!")
+    elif age >= 25 and beauty_score > 7.0:
+        insights["personality_traits"].append("💼 Mature & Confident - Your beauty shows life experience!")
+    
+    # Future predictions based on analysis
+    if beauty_score >= 9.0:
+        insights["future_predictions"].append("🌟 Will become a famous celebrity - Your beauty is undeniable!")
+    elif beauty_score >= 8.0:
+        insights["future_predictions"].append("💼 Will be a successful entrepreneur - Your confidence will lead to success!")
+    elif beauty_score >= 7.0:
+        insights["future_predictions"].append("💕 Will have amazing relationships - Your warm presence attracts people!")
+    else:
+        insights["future_predictions"].append("💎 Will discover hidden talents - Your unique charm will shine!")
+    
+    # Fun facts based on emotion and features
+    if emotion == "happy" and facial_features['expression'] > 80:
+        insights["fun_facts"].append("😊 Your smile lights up every room - it's absolutely contagious!")
+    elif emotion == "neutral" and facial_features['symmetry'] > 85:
+        insights["fun_facts"].append("🎭 You have a mysterious, elegant aura - people are drawn to you!")
+    elif facial_features['skinClarity'] > 90:
+        insights["fun_facts"].append("✨ Your radiant skin reflects your inner glow!")
+    elif facial_features['proportions'] > 85:
+        insights["fun_facts"].append("🌟 Your perfectly proportioned features show natural harmony!")
+    
+    return insights
+
+def generate_ai_fun_comment(beauty_score: float, insights: Dict, age: int, gender: str) -> str:
+    """Generate an AI-powered fun comment"""
+    
+    # Create a personalized comment based on the analysis
+    if beauty_score >= 9.0:
+        base_comment = "🔥 WOW! You've got SERIOUS star potential! Your beauty is absolutely stunning!"
+    elif beauty_score >= 8.0:
+        base_comment = "🌟 AMAZING! You're absolutely gorgeous! Your natural beauty is incredible!"
+    elif beauty_score >= 7.0:
+        base_comment = "💫 Fantastic! You have such natural beauty! You're absolutely lovely!"
+    elif beauty_score >= 6.0:
+        base_comment = "✨ Great! You have a unique and attractive look! You're beautiful!"
+    else:
+        base_comment = "💎 Beautiful! You have a special kind of charm! You're unique!"
+    
+    # Add a random achievement or trait
+    all_insights = []
+    for category in insights.values():
+        all_insights.extend(category)
+    
+    if all_insights:
+        random_insight = random.choice(all_insights)
+        return f"{base_comment} {random_insight} 👑💫"
+    else:
+        return f"{base_comment} You're going to achieve amazing things! 🌟"
+
 @app.on_event("startup")
 async def startup_event():
     """Load celebrities on startup"""
@@ -428,11 +626,11 @@ async def analyze_face(file: UploadFile = File(...)):
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
             
-            # Generate personality insights
-            insights = generate_personality_insights(age, gender, beauty_score, emotion)
+            # Generate AI-powered personality insights
+            insights = generate_ai_personality_insights(age, gender, beauty_score, emotion, facial_features)
             
-            # Generate fun comment
-            fun_comment = generate_fun_comment(beauty_score, insights)
+            # Generate AI-powered fun comment
+            fun_comment = generate_ai_fun_comment(beauty_score, insights, age, gender)
             
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
