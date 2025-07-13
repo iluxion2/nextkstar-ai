@@ -195,6 +195,154 @@ def find_celebrity_lookalike(beauty_score: float, age: int, gender: str) -> Dict
         "info": celeb_info
     }
 
+def generate_personality_insights(age: int, gender: str, beauty_score: float, emotion: str) -> Dict:
+    """Generate fun personality insights and achievements based on analysis"""
+    
+    insights = {
+        "achievements": [],
+        "personality_traits": [],
+        "future_predictions": [],
+        "fun_facts": []
+    }
+    
+    # Achievement predictions based on beauty score
+    if beauty_score >= 9.0:
+        insights["achievements"].extend([
+            "👑 Future K-pop Idol",
+            "🏆 Beauty Pageant Winner",
+            "⭐ Most Popular in School",
+            "💫 Instagram Influencer Potential"
+        ])
+    elif beauty_score >= 8.0:
+        insights["achievements"].extend([
+            "🎭 Drama Club Star",
+            "📸 Model Material",
+            "👥 Class President Material",
+            "💝 Most Likely to Get 20+ Crushes"
+        ])
+    elif beauty_score >= 7.0:
+        insights["achievements"].extend([
+            "📚 Future Tutor",
+            "🎨 Creative Genius",
+            "🤝 Natural Leader",
+            "💕 Relationship Expert"
+        ])
+    elif beauty_score >= 6.0:
+        insights["achievements"].extend([
+            "🎯 Goal Achiever",
+            "🌟 Hidden Talent",
+            "💪 Confidence Builder",
+            "🎪 Life of the Party"
+        ])
+    else:
+        insights["achievements"].extend([
+            "💎 Diamond in the Rough",
+            "🌱 Growth Mindset",
+            "🎭 Character Actor",
+            "💫 Late Bloomer"
+        ])
+    
+    # Personality traits based on age and gender
+    if age < 20:
+        insights["personality_traits"].extend([
+            "🎓 Academic Excellence",
+            "🚀 Ambitious Dreamer",
+            "🎵 Trendsetter",
+            "💡 Innovative Thinker"
+        ])
+    elif age < 30:
+        insights["personality_traits"].extend([
+            "💼 Career Climber",
+            "🌍 World Traveler",
+            "🎯 Goal-Oriented",
+            "💪 Confident Leader"
+        ])
+    else:
+        insights["personality_traits"].extend([
+            "🧠 Wise Mentor",
+            "🏠 Life Experience",
+            "💎 Mature Beauty",
+            "🌟 Inspirational Figure"
+        ])
+    
+    # Future predictions
+    if beauty_score >= 8.5:
+        insights["future_predictions"].extend([
+            "🌟 Will become a famous celebrity",
+            "💍 Will have the most romantic proposals",
+            "🏆 Will win multiple awards",
+            "📱 Will have 1M+ social media followers"
+        ])
+    elif beauty_score >= 7.5:
+        insights["future_predictions"].extend([
+            "💼 Will be a successful entrepreneur",
+            "🎭 Will star in movies/TV shows",
+            "💕 Will have amazing relationships",
+            "🌍 Will travel the world"
+        ])
+    else:
+        insights["future_predictions"].extend([
+            "💎 Will discover hidden talents",
+            "🎯 Will achieve personal goals",
+            "💪 Will overcome challenges",
+            "🌟 Will inspire others"
+        ])
+    
+    # Fun facts based on emotion and analysis
+    if emotion == "happy":
+        insights["fun_facts"].extend([
+            "😊 Your smile lights up every room",
+            "🎉 You're the life of every party",
+            "💫 Positive energy radiates from you",
+            "🌟 You make everyone around you happy"
+        ])
+    elif emotion == "neutral":
+        insights["fun_facts"].extend([
+            "🎭 You have a mysterious aura",
+            "💎 You're like a hidden gem",
+            "🌙 You have a calm, peaceful presence",
+            "🎯 You're focused and determined"
+        ])
+    else:
+        insights["fun_facts"].extend([
+            "🎨 You have artistic depth",
+            "💭 You're a deep thinker",
+            "🎪 You have dramatic flair",
+            "💫 You're intriguing and complex"
+        ])
+    
+    # Add gender-specific insights
+    if gender.lower() in ['male', 'm']:
+        insights["fun_facts"].extend([
+            "💪 You have strong leadership qualities",
+            "🎯 You're goal-oriented and ambitious",
+            "🛡️ You're protective and caring",
+            "🌟 You have natural charisma"
+        ])
+    elif gender.lower() in ['female', 'f']:
+        insights["fun_facts"].extend([
+            "💎 You have elegant beauty",
+            "🎭 You're graceful and poised",
+            "💕 You have a warm, caring nature",
+            "✨ You're naturally charming"
+        ])
+    
+    return insights
+
+def generate_fun_comment(beauty_score: float, insights: Dict) -> str:
+    """Generate a fun, personalized comment based on beauty score and insights"""
+    
+    if beauty_score >= 9.0:
+        return f"🔥 WOW! You've got SERIOUS star potential! You'd definitely win first place on any audition show! 👑💫 {random.choice(insights['achievements'])} material right here!"
+    elif beauty_score >= 8.0:
+        return f"🌟 AMAZING! You're absolutely stunning! {random.choice(insights['achievements'])} vibes all the way! ✨💖"
+    elif beauty_score >= 7.0:
+        return f"💫 Fantastic! You have such natural beauty! {random.choice(insights['achievements'])} potential for sure! 🌟"
+    elif beauty_score >= 6.0:
+        return f"✨ Great! You have a unique and attractive look! {random.choice(insights['achievements'])} in your future! 💪"
+    else:
+        return f"💎 Beautiful! You have a special kind of charm! {random.choice(insights['achievements'])} waiting to happen! 🌱"
+
 @app.on_event("startup")
 async def startup_event():
     """Load celebrities on startup"""
@@ -209,8 +357,7 @@ async def root():
         "csv_data_loaded": len(celeb_data),
         "deepface_available": DEEPFACE_AVAILABLE,
         "opencv_available": True,
-        "insightface_available": INSIGHTFACE_AVAILABLE,
-        "version": "1.1.0"  # Force new deployment
+        "insightface_available": INSIGHTFACE_AVAILABLE
     }
 
 @app.get("/health")
@@ -281,6 +428,12 @@ async def analyze_face(file: UploadFile = File(...)):
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
             
+            # Generate personality insights
+            insights = generate_personality_insights(age, gender, beauty_score, emotion)
+            
+            # Generate fun comment
+            fun_comment = generate_fun_comment(beauty_score, insights)
+            
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
             
@@ -295,6 +448,8 @@ async def analyze_face(file: UploadFile = File(...)):
                     "beauty_score": round(beauty_score, 1),
                     "facial_features": facial_features
                 },
+                "personality_insights": insights,
+                "fun_comment": fun_comment,
                 "lookalike": lookalike_result,
                 "timestamp": str(np.datetime64('now'))
             }
