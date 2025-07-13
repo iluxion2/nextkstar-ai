@@ -1,27 +1,34 @@
+'use client'
+
+import { useEffect } from 'react'
+
 export default function GoogleAnalytics() {
-  return (
-    <>
-      {/* Google Analytics 4 */}
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-SEDN779RMS"
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-SEDN779RMS', {
-              page_title: 'KStar - AI Face Analysis',
-              page_location: window.location.href,
-            });
-          `,
-        }}
-      />
-      
-      {/* Google Search Console Verification */}
-      <meta name="google-site-verification" content="your-verification-code" />
-    </>
-  );
+  useEffect(() => {
+    // Load Google Analytics script
+    const script1 = document.createElement('script')
+    script1.async = true
+    script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-SEDN779RMS'
+    document.head.appendChild(script1)
+
+    // Initialize Google Analytics
+    const script2 = document.createElement('script')
+    script2.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-SEDN779RMS', {
+        page_title: document.title,
+        page_location: window.location.href,
+      });
+    `
+    document.head.appendChild(script2)
+
+    // Cleanup function
+    return () => {
+      document.head.removeChild(script1)
+      document.head.removeChild(script2)
+    }
+  }, [])
+
+  return null
 } 

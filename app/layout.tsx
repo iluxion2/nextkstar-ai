@@ -59,6 +59,21 @@ export default function RootLayout({
         <StructuredData />
         <GoogleAnalytics />
         <GoogleSearchConsole />
+        {/* Google Analytics Script */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-SEDN779RMS"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-SEDN779RMS');
+            `,
+          }}
+        />
       </head>
       <body className={inter.className}>
         <ConsentWrapper>
