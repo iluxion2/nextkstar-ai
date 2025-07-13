@@ -21,7 +21,15 @@ app = FastAPI(title="AI Face Analysis API", version="1.0.0")
 # Allow CORS for your frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3003", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3003", 
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3004",
+        "https://nextkstar.com",
+        "https://www.nextkstar.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

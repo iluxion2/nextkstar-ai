@@ -41,6 +41,7 @@ import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, up
 import { auth } from "../firebase";
 import { db } from "../firebase";
 import { setDoc, doc, getDoc } from "firebase/firestore";
+import API_ENDPOINTS from '../config/api'
 
 interface AnalysisResult {
   beautyScore: number
@@ -153,7 +154,7 @@ export default function AnalysisPage() {
       formData.append('file', blob, 'image.jpg')
 
       setAnalysisProgress('Analyzing facial features...')
-      const response = await fetch('http://localhost:8000/analyze/', {
+      const response = await fetch(API_ENDPOINTS.ANALYZE, {
         method: 'POST',
         body: formData,
       })

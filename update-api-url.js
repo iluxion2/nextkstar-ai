@@ -3,35 +3,79 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get the Railway URL from command line argument
-const railwayUrl = process.argv[2];
+// Function to update API URL in the config file
+function updateApiUrl(newUrl) {
+  const configPath = path.join(__dirname, 'app', 'config', 'api.ts');
+  
+  if (!fs.existsSync(configPath)) {
+    console.error('❌ API config file not found:', configPath);
+    return false;
+  }
 
-if (!railwayUrl) {
-  console.log('Usage: node update-api-url.js <RAILWAY_URL>');
-  console.log('Example: node update-api-url.js https://nextkstar-backend.railway.app');
-  process.exit(1);
+  let content = fs.readFileSync(configPath, 'utf8');
+  
+  // Replace the localhost URL with the new URL
+  const updatedContent = content.replace(
+    /return 'http:\/\/localhost:8000'/g,
+    `return '${newUrl}'`
+  );
+  
+  fs.writeFileSync(configPath, updatedContent);
+  console.log('✅ API URL updated successfully!');
+  console.log(`   New URL: ${newUrl}`);
+  return true;
 }
 
-// Remove trailing slash if present
-const cleanUrl = railwayUrl.replace(/\/$/, '');
-
-// Read the analysis page
-const analysisPath = path.join(__dirname, 'app', 'analysis', 'page.tsx');
-let content = fs.readFileSync(analysisPath, 'utf8');
-
-// Replace the localhost URL with Railway URL
-const oldUrl = 'http://localhost:8000';
-const newUrl = cleanUrl;
-
-if (content.includes(oldUrl)) {
-  content = content.replace(new RegExp(oldUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), newUrl);
+// Function to build and deploy
+function buildAndDeploy() {
+  console.log('🚀 Building and deploying...');
   
-  // Write back to file
-  fs.writeFileSync(analysisPath, content);
+  // Build the project
+  const { execSync } = require('child_process');
+  try {
+    execSync('npm run build', { stdio: 'inherit' });
+    console.log('✅ Build completed successfully!');
+    
+    // Deploy to Firebase
+    execSync('firebase deploy', { stdio: 'inherit' });
+    console.log('✅ Deployment completed successfully!');
+    
+  } catch (error) {
+    console.error('❌ Build or deployment failed:', error.message);
+    return false;
+  }
   
-  console.log(`✅ Updated API URL from ${oldUrl} to ${newUrl}`);
-  console.log('📝 Now run: npm run build && firebase deploy');
-} else {
-  console.log('❌ Could not find localhost:8000 in the file');
-  console.log('🔍 Please manually update the API URL in app/analysis/page.tsx');
-} 
+  return true;
+}
+
+// Main execution
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  
+  if (args.length === 0) {
+    console.log('📋 Usage: node update-api-url.js <backend-url>');
+    console.log('   Example: node update-api-url.js https://your-backend.railway.app');
+    console.log('');
+    console.log('🔧 This script will:');
+    console.log('   1. Update the API URL in your frontend config');
+    console.log('   2. Build your Next.js project');
+    console.log('   3. Deploy to Firebase Hosting');
+    process.exit(1);
+  }
+  
+  const newUrl = args[0];
+  
+  console.log('🔧 Updating API URL...');
+  if (updateApiUrl(newUrl)) {
+    console.log('');
+    console.log('🚀 Building and deploying...');
+    if (buildAndDeploy()) {
+      console.log('');
+      console.log('🎉 Success! Your live site should now work with the new backend URL.');
+      console.log(`   Live site: https://nextkstar.com`);
+      console.log(`   Backend: ${newUrl}`);
+    }
+  }
+}
+
+module.exports = { updateApiUrl, buildAndDeploy }; 
