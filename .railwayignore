@@ -1,0 +1,16 @@
+# Ignore frontend files for Railway backend deployment
+app/
+public/
+out/
+.next/
+node_modules/
+package.json
+package-lock.json
+next.config.js
+tsconfig.json
+firebase.json
+.firebaserc
+render.yaml
+update-backend-url.js
+deploy-instructions.md
+README.md 
