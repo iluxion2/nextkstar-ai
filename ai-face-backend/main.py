@@ -5,13 +5,22 @@ from PIL import Image
 import numpy as np
 import os
 import io
+import cv2
 import pandas as pd
 from typing import List, Dict, Any
 import logging
 import math
 import random
+import gc
 import time
-import requests
+
+# Import DeepFace with error handling
+try:
+    from deepface import DeepFace
+    DEEPFACE_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"DeepFace not available: {e}")
+    DEEPFACE_AVAILABLE = False
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -22,177 +31,189 @@ app = FastAPI(title="AI Face Analysis API", version="1.0.0")
 # Allow CORS for your frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=[
+        "http://localhost:3003", 
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3004",
+        "https://nextkstar.com",
+        "https://www.nextkstar.com",
+        "https://nextkstar-ai.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load celebrity data
+# Global variables for celebrity data
+CELEB_DIR = "celebrities"
+CSV_FILE = "celebrities/kpopidolsv3.csv"
+celeb_names = []
+celeb_images = []
 celeb_data = []
 
-def load_celebrity_data():
-    """Load celebrity data from CSV"""
-    try:
-        df = pd.read_csv('celebrities.csv')
-        return df.to_dict('records')
-    except Exception as e:
-        logger.warning(f"Could not load celebrity data: {e}")
-        return []
+def load_celebrities():
+    """Load celebrity data from CSV and images"""
+    global celeb_names, celeb_images, celeb_data
+    
+    # Load CSV data
+    if os.path.exists(CSV_FILE):
+        try:
+            celeb_data = pd.read_csv(CSV_FILE).to_dict('records')
+            logger.info(f"Loaded CSV data with {len(celeb_data)} K-pop idols")
+        except Exception as e:
+            logger.error(f"Error loading CSV: {e}")
+            celeb_data = []
+    
+    # Load celebrity images
+    if os.path.exists(CELEB_DIR):
+        image_files = [f for f in os.listdir(CELEB_DIR) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+        celeb_names = [os.path.splitext(f)[0] for f in image_files]
+        celeb_images = [os.path.join(CELEB_DIR, f) for f in image_files]
+        logger.info(f"Loaded {len(celeb_names)} celebrity images")
+    else:
+        logger.warning("Celebrities directory not found")
+    celeb_names = []
+    celeb_images = []
 
-# Load data on startup
-@app.on_event("startup")
-async def startup_event():
-    global celeb_data
-    celeb_data = load_celebrity_data()
-    logger.info(f"Loaded {len(celeb_data)} celebrity records")
+def find_celeb_info(name: str) -> Dict:
+    """Find celebrity info from CSV data"""
+    for celeb in celeb_data:
+        if celeb.get('name', '').lower() == name.lower():
+            return celeb
+    return {}
 
-def analyze_face_basic(image_path: str):
-    """Basic face analysis using image processing"""
+def analyze_with_deepface(image_path: str):
+    """Analyze image using DeepFace"""
+    if not DEEPFACE_AVAILABLE:
+        raise Exception("DeepFace is not available")
+    
     try:
-        # Open and analyze image
-        with Image.open(image_path) as img:
-            # Convert to RGB if needed
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            
-            # Get image dimensions
-            width, height = img.size
-            
-            # Basic analysis based on image properties
-            # This is a simplified version - in a real app you'd use more sophisticated analysis
-            
-            # Analyze brightness
-            img_array = np.array(img)
-            brightness = np.mean(img_array)
-            
-            # Analyze contrast
-            contrast = np.std(img_array)
-            
-            # Estimate age based on image characteristics (simplified)
-            age = random.randint(18, 65)
-            
-            # Estimate gender (simplified)
-            gender = random.choice(['Man', 'Woman'])
-            
-            # Estimate emotion based on brightness and contrast
-            if brightness > 150:
-                emotion = 'happy'
-            elif brightness < 100:
-                emotion = 'sad'
-            else:
-                emotion = 'neutral'
-            
-            return {
-                'age': age,
-                'gender': gender,
-                'dominant_emotion': emotion,
-                'race': 'Unknown',
-                'region': 'Unknown'
-            }
+        result = DeepFace.analyze(
+            img_path=image_path,
+            actions=['age', 'gender', 'emotion'],
+            enforce_detection=False,
+            detector_backend='opencv',
+            silent=True
+        )
+        
+        return result
     except Exception as e:
-        logger.error(f"Basic analysis error: {e}")
-        return {
-            'age': 25,
-            'gender': 'Unknown',
-            'dominant_emotion': 'neutral',
-            'race': 'Unknown',
-            'region': 'Unknown'
-        }
+        logger.error(f"DeepFace analysis error: {e}")
+        raise
 
 def calculate_beauty_score(age: int, gender: str, emotion: str, facial_features: Dict) -> float:
-    """Calculate beauty score based on various factors"""
-    base_score = 75.0
+    """Calculate beauty score based on facial features"""
+    # Base score from facial features
+    symmetry_weight = 0.3
+    skin_clarity_weight = 0.25
+    proportions_weight = 0.25
+    expression_weight = 0.2
     
-    # Age factor
-    if 20 <= age <= 35:
-        age_bonus = 10
-    elif 36 <= age <= 50:
-        age_bonus = 5
+    base_score = (
+        facial_features["symmetry"] * symmetry_weight +
+        facial_features["skinClarity"] * skin_clarity_weight +
+        facial_features["proportions"] * proportions_weight +
+        facial_features["expression"] * expression_weight
+    )
+    
+    # Age adjustment (peak beauty around 20-30)
+    age_factor = 1.0
+    if 20 <= age <= 30:
+        age_factor = 1.1
+    elif 15 <= age <= 19 or 31 <= age <= 35:
+        age_factor = 1.0
+    elif 36 <= age <= 45:
+        age_factor = 0.9
     else:
-        age_bonus = 0
+        age_factor = 0.8
     
-    # Emotion factor
-    emotion_bonus = 10 if emotion == 'happy' else 0
+    # Gender adjustment (slight bias towards female beauty standards)
+    gender_factor = 1.05 if gender.lower() in ['woman', 'female', 'f'] else 1.0
     
-    # Facial features factor
-    features_bonus = (
-        facial_features.get('symmetry', 75) * 0.3 +
-        facial_features.get('skinClarity', 75) * 0.3 +
-        facial_features.get('proportions', 75) * 0.2 +
-        facial_features.get('expression', 75) * 0.2
-    ) / 100 * 20
+    # Emotion adjustment
+    emotion_factor = 1.1 if emotion.lower() == 'happy' else 1.0
     
-    total_score = base_score + age_bonus + emotion_bonus + features_bonus
-    return min(100, max(0, total_score))
+    # Calculate final score (scale to 0-10)
+    final_score = (base_score / 100) * 10 * age_factor * gender_factor * emotion_factor
+    
+    # Add some randomness for variety
+    final_score += random.uniform(-0.5, 0.5)
+    
+    return max(1.0, min(10.0, final_score))
 
 def find_celebrity_lookalike(beauty_score: float, age: int, gender: str) -> Dict:
     """Find celebrity lookalike based on analysis results"""
-    if not celeb_data:
-        return {
-            "name": "Unknown",
-            "similarity": 0,
-            "image_url": "",
-            "description": "No celebrity data available"
-        }
+    if not celeb_names:
+        return {"name": "Unknown", "similarity": 0.0, "image": "", "info": {}}
     
-    # Filter celebrities by gender and age range
-    age_range = 10
-    filtered_celebs = [
-        celeb for celeb in celeb_data
-        if celeb.get('gender', '').lower() == gender.lower() and
-        abs(celeb.get('age', 25) - age) <= age_range
-    ]
+    # Filter celebrities by gender if possible
+    filtered_celebrities = []
+    for i, (name, img) in enumerate(zip(celeb_names, celeb_images)):
+        info = find_celeb_info(name)
+        # Simple gender matching (this is a basic implementation)
+        celeb_gender = info.get('gender', 'Unknown')
+        if gender.lower() in ['man', 'male', 'm'] and celeb_gender.lower() in ['male', 'm']:
+            filtered_celebrities.append((i, name, img, info))
+        elif gender.lower() in ['woman', 'female', 'f'] and celeb_gender.lower() in ['female', 'f']:
+            filtered_celebrities.append((i, name, img, info))
+        else:
+            filtered_celebrities.append((i, name, img, info))
     
-    if not filtered_celebs:
-        filtered_celebs = celeb_data
+    if not filtered_celebrities:
+        filtered_celebrities = [(i, name, img, find_celeb_info(name)) for i, (name, img) in enumerate(zip(celeb_names, celeb_images))]
     
-    # Find best match based on beauty score
-    best_match = None
-    best_similarity = 0
+    # Select random celebrity from filtered list
+    random_celeb = random.choice(filtered_celebrities)
+    idx, celeb_name, celeb_image, celeb_info = random_celeb
     
-    for celeb in filtered_celebs:
-        celeb_score = celeb.get('beauty_score', 75)
-        similarity = 100 - abs(beauty_score - celeb_score)
-        
-        if similarity > best_similarity:
-            best_similarity = similarity
-            best_match = celeb
+    # Calculate similarity based on beauty score and age
+    age_diff = abs(age - celeb_info.get('age', 25))
+    age_similarity = max(0, 100 - age_diff * 2)
+    beauty_similarity = min(95, max(60, beauty_score * 8 + random.uniform(-10, 10)))
     
-    if best_match:
-        return {
-            "name": best_match.get('name', 'Unknown'),
-            "similarity": round(best_similarity, 1),
-            "image_url": best_match.get('image_url', ''),
-            "description": best_match.get('description', 'Celebrity lookalike found!')
-        }
+    similarity = (age_similarity + beauty_similarity) / 2
     
     return {
-        "name": "Unknown",
-        "similarity": 0,
-        "image_url": "",
-        "description": "No suitable celebrity match found"
+        "name": celeb_name,
+        "similarity": round(similarity, 1),
+        "image": celeb_image,
+        "info": celeb_info
     }
+
+@app.on_event("startup")
+async def startup_event():
+    """Load celebrities on startup"""
+    load_celebrities()
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
-    return {"message": "AI Face Analysis API is running!", "status": "healthy"}
+    return {
+        "message": "AI Face Analysis API is running!", 
+        "celebrities_loaded": len(celeb_names), 
+        "csv_data_loaded": len(celeb_data),
+        "deepface_available": DEEPFACE_AVAILABLE
+    }
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "timestamp": time.time()}
+    return {
+        "status": "healthy", 
+        "celebrities_count": len(celeb_names), 
+        "csv_records": len(celeb_data),
+        "deepface_available": DEEPFACE_AVAILABLE
+    }
 
 @app.post("/analyze/")
 async def analyze_face(file: UploadFile = File(...)):
-    """Analyze uploaded face image"""
+    """Analyze uploaded face image with DeepFace"""
     try:
         # Validate file
         if not file.content_type or not file.content_type.startswith('image/'):
             raise HTTPException(status_code=400, detail="Please upload a valid image file (JPG, PNG, etc.)")
         
-        # Create temporary file
+        # Create temporary file for DeepFace
         temp_path = f"temp_{int(time.time())}_{random.randint(1000, 9999)}.jpg"
         
         try:
@@ -200,12 +221,15 @@ async def analyze_face(file: UploadFile = File(...)):
             contents = await file.read()
             with open(temp_path, "wb") as f:
                 f.write(contents)
-            
-            # Analyze with basic method
-            logger.info("Starting basic face analysis...")
-            result = analyze_face_basic(temp_path)
-            
+        
+            # Analyze with DeepFace
+            logger.info("Starting DeepFace analysis...")
+            result = analyze_with_deepface(temp_path)
+        
             # Extract results
+            if isinstance(result, list):
+                result = result[0]
+        
             age = result.get('age', 25)
             gender = result.get('gender', 'Unknown')
             emotion = result.get('dominant_emotion', 'neutral')
@@ -217,13 +241,13 @@ async def analyze_face(file: UploadFile = File(...)):
                 "proportions": random.uniform(75, 90),
                 "expression": 85 if emotion == 'happy' else 75
             }
-            
+        
             # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
-            
+        
             # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
-            
+        
             # Prepare response
             response = {
                 "success": True,
@@ -235,25 +259,52 @@ async def analyze_face(file: UploadFile = File(...)):
                     "beauty_score": round(beauty_score, 1),
                     "facial_features": facial_features
                 },
-                "celebrity_lookalike": lookalike_result,
-                "processing_time": round(time.time() - time.time(), 2)
+                "lookalike": lookalike_result,
+                "timestamp": str(np.datetime64('now'))
             }
-            
-            return JSONResponse(content=response)
+        
+            logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
+            return response
             
         finally:
             # Clean up temporary file
             if os.path.exists(temp_path):
                 os.remove(temp_path)
-                
+            # Force garbage collection
+            gc.collect()
+        
     except Exception as e:
-        logger.error(f"Analysis error: {e}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+        logger.error(f"Error in face analysis: {e}")
+        
+        # Provide funny error messages
+        error_messages = [
+            "Oops! Our AI had a brain fart! 🤯 Please try again with a different image!",
+            "Our AI is having a bad day! 😤 Maybe try a different photo?",
+            "Something went wrong in our AI's head! 🧠 Please try again!",
+            "Our AI is being dramatic today! 😅 Try uploading a different image!",
+            "Our AI says 'I give up!' 🙈 Please try with a different photo!"
+        ]
+        
+        raise HTTPException(
+            status_code=500, 
+            detail=random.choice(error_messages)
+        )
 
 @app.get("/celebrities/")
 async def get_celebrities():
-    """Get list of celebrities"""
-    return {"celebrities": celeb_data[:10] if celeb_data else []}
+    """Get list of loaded celebrities with CSV data"""
+    celebrities = []
+    for i, (name, img) in enumerate(zip(celeb_names, celeb_images)):
+        info = find_celeb_info(name)
+        celebrities.append({
+            "name": name,
+            "image": img,
+            "info": info
+        })
+    return {
+        "count": len(celeb_names),
+        "celebrities": celebrities
+    }
 
 @app.get("/csv-stats/")
 async def get_csv_stats():
@@ -262,6 +313,12 @@ async def get_csv_stats():
         "total_records": len(celeb_data),
         "sample_records": celeb_data[:5] if celeb_data else []
     }
+
+@app.post("/reload-celebrities/")
+async def reload_celebrities():
+    """Reload celebrity database"""
+    load_celebrities()
+    return {"message": f"Reloaded {len(celeb_names)} celebrities and {len(celeb_data)} CSV records"}
 
 if __name__ == "__main__":
     import uvicorn
