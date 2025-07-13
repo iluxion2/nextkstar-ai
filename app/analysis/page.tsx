@@ -306,7 +306,7 @@ export default function AnalysisPage() {
               {/* Auth Buttons */}
               {!isRealUser ? (
                 <div className="flex items-center space-x-2">
-                  <button
+              <button
                     onClick={() => setShowSignUp(true)}
                     className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors text-white"
                     style={{ backgroundColor: '#ff5a8d' }}
@@ -323,8 +323,8 @@ export default function AnalysisPage() {
                     onMouseOut={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     {getTranslation('Login', language)}
-                  </button>
-                </div>
+              </button>
+            </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">Welcome, {user.displayName || user.email}</span>
@@ -334,7 +334,7 @@ export default function AnalysisPage() {
                   >
                     Sign Out
                   </button>
-                </div>
+          </div>
               )}
             </div>
           </div>
@@ -355,8 +355,8 @@ export default function AnalysisPage() {
               {/* Beauty Score */}
               <div className="text-4xl font-bold text-green-600 text-center">
                 {Math.round(analysisResult.beautyScore * 10)} <span className="text-lg text-gray-500">/ 100</span>
-              </div>
-              
+            </div>
+
               {/* Lucas with Speech Bubble */}
               <div className="flex items-center justify-center">
                 <div className="relative">
@@ -444,14 +444,14 @@ export default function AnalysisPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
               {/* Celebrity Match Card */}
               <div className="flex justify-center">
-                <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
-              </div>
+              <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
+            </div>
               {/* Expected Age Card */}
               <div className="bg-white rounded-xl p-4 text-center shadow-lg flex flex-col justify-center">
                 <h3 className="text-xl font-bold mb-4">Expected Age</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">
                   {typeof analysisResult.age === 'number' ? analysisResult.age : Math.round(20 + (analysisResult.beautyScore-5)*2)}
-                </div>
+          </div>
                 <div className="text-gray-500 text-sm">AI-estimated age</div>
               </div>
               {/* Instagram Followers Card */}
@@ -523,9 +523,9 @@ export default function AnalysisPage() {
       
       {/* Main Content */}
       <div className="p-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
             <div className="flex items-center">
               <Image 
                 src="/images/kstar.png" 
@@ -535,35 +535,35 @@ export default function AnalysisPage() {
                 className="mr-4" 
                 priority
               />
-              <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-800">
                 
-              </h1>
+          </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <LanguageSelector currentLanguage={language} onLanguageChange={setLanguage} />
-              
-              {/* Auth Buttons */}
+          <div className="flex items-center space-x-4">
+            <LanguageSelector currentLanguage={language} onLanguageChange={setLanguage} />
+            
+            {/* Auth Buttons */}
               {!isRealUser ? (
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setShowSignUp(true)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors text-white"
-                    style={{ backgroundColor: '#ff5a8d' }}
-                    onMouseOver={e => (e.currentTarget.style.backgroundColor = '#ffc3bb')}
-                    onMouseOut={e => (e.currentTarget.style.backgroundColor = '#ff5a8d')}
-                  >
-                    {getTranslation('Sign Up', language)}
-                  </button>
-                  <button
-                    onClick={() => setShowLogin(true)}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full font-semibold transition-colors"
-                    style={{ color: '#1da1f2', backgroundColor: 'transparent', border: 'none' }}
-                    onMouseOver={e => (e.currentTarget.style.backgroundColor = '#f3f4f6')}
-                    onMouseOut={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                  >
-                    {getTranslation('Login', language)}
-                  </button>
-                </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowSignUp(true)}
+                className="flex items-center space-x-2 px-4 py-2 rounded-full transition-colors text-white"
+                style={{ backgroundColor: '#ff5a8d' }}
+                onMouseOver={e => (e.currentTarget.style.backgroundColor = '#ffc3bb')}
+                onMouseOut={e => (e.currentTarget.style.backgroundColor = '#ff5a8d')}
+              >
+                {getTranslation('Sign Up', language)}
+              </button>
+              <button
+                onClick={() => setShowLogin(true)}
+                className="flex items-center space-x-2 px-4 py-2 rounded-full font-semibold transition-colors"
+                style={{ color: '#1da1f2', backgroundColor: 'transparent', border: 'none' }}
+                onMouseOver={e => (e.currentTarget.style.backgroundColor = '#f3f4f6')}
+                onMouseOut={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                {getTranslation('Login', language)}
+              </button>
+            </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">Welcome, {user.displayName || user.email}</span>
@@ -575,108 +575,108 @@ export default function AnalysisPage() {
                   </button>
                 </div>
               )}
+          </div>
+        </div>
+
+        {/* Upload Section */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <Image 
+                src="/images/lucas.png" 
+                alt="Lucas" 
+                width={80}
+                height={80}
+                className="object-cover" 
+                  priority
+              />
             </div>
+            <h2 className="text-2xl font-bold mb-2">
+              {getTranslation('Upload Your Photo', language)}
+            </h2>
+            <p className="text-gray-600">
+              {getTranslation('Get detailed AI analysis of your facial features, beauty score, and celebrity matches', language)}
+            </p>
           </div>
 
-          {/* Upload Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
-                <Image 
-                  src="/images/lucas.png" 
-                  alt="Lucas" 
-                  width={80}
-                  height={80}
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">
-                {getTranslation('Upload Your Photo', language)}
-              </h2>
-              <p className="text-gray-600">
-                {getTranslation('Get detailed AI analysis of your facial features, beauty score, and celebrity matches', language)}
+          {/* Upload Options */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* File Upload */}
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                isDragActive
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">
+                {getTranslation('Upload Photo', language)}
+              </h3>
+              <p className="text-gray-500 text-sm">
+                {getTranslation('Drag & drop or click to select', language)}
               </p>
             </div>
 
-            {/* Upload Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* File Upload */}
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-                  isDragActive
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
-                }`}
-              >
-                <input {...getInputProps()} />
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {getTranslation('Upload Photo', language)}
-                </h3>
-                <p className="text-gray-500 text-sm">
-                  {getTranslation('Drag & drop or click to select', language)}
-                </p>
-              </div>
-
-              {/* Camera Capture */}
-              <div 
-                onClick={() => setShowWebcam(true)}
-                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gray-50 transition-all"
-              >
-                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {getTranslation('Take Photo', language)}
-                </h3>
-                <p className="text-gray-500 text-sm">
-                  {getTranslation('Click to use your camera', language)}
-                </p>
-              </div>
+            {/* Camera Capture */}
+            <div 
+              onClick={() => setShowWebcam(true)}
+              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gray-50 transition-all"
+            >
+              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">
+                {getTranslation('Take Photo', language)}
+              </h3>
+              <p className="text-gray-500 text-sm">
+                {getTranslation('Click to use your camera', language)}
+              </p>
             </div>
+          </div>
 
-            {/* Selected Image Preview */}
-            {selectedImage && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-8 text-center"
-              >
-                <div className="relative inline-block">
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="max-w-xs h-auto rounded-lg shadow-lg"
-                  />
-                  <button
-                    onClick={resetAnalysis}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                
-                <div className="mt-6">
-                  <button
-                    onClick={analyzeImage}
-                    disabled={isAnalyzing}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto"
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+          {/* Selected Image Preview */}
+          {selectedImage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 text-center"
+            >
+              <div className="relative inline-block">
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  className="max-w-xs h-auto rounded-lg shadow-lg"
+                />
+                <button
+                  onClick={resetAnalysis}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              
+              <div className="mt-6">
+                <button
+                  onClick={analyzeImage}
+                  disabled={isAnalyzing}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                         <span>{analysisProgress || getTranslation('Analyzing...', language)}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={20} />
-                        <span>{getTranslation('Start Analysis', language)}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={20} />
+                      <span>{getTranslation('Start Analysis', language)}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          )}
 
             {/* Funny Error Message */}
             {faceDetectionError && (
@@ -709,26 +709,26 @@ export default function AnalysisPage() {
                 </div>
               </motion.div>
             )}
-          </div>
+        </div>
 
-          {/* Features */}
+        {/* Features */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-8">
             <div className="bg-white rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <h3 className="font-semibold mb-1 text-lg">{getTranslation('Beauty Score', language)}</h3>
               <p className="text-gray-600 text-sm mb-2">
-                {getTranslation('AI-powered beauty analysis', language)}
-              </p>
+              {getTranslation('AI-powered beauty analysis', language)}
+            </p>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style={{ width: '75%' }}></div>
               </div>
               <p className="text-xs text-gray-500 mt-1">Advanced AI algorithms</p>
-            </div>
+          </div>
 
             <div className="bg-white rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <h3 className="font-semibold mb-1 text-lg">{getTranslation('Facial Features', language)}</h3>
               <p className="text-gray-600 text-sm mb-2">
-                {getTranslation('Detailed feature analysis', language)}
-              </p>
+              {getTranslation('Detailed feature analysis', language)}
+            </p>
               <div className="flex justify-center space-x-1">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -736,23 +736,23 @@ export default function AnalysisPage() {
                 <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
               </div>
               <p className="text-xs text-gray-500 mt-1">Symmetry, proportions & more</p>
-            </div>
+          </div>
 
             <div className="bg-white rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <h3 className="font-semibold mb-1 text-lg">{getTranslation('Celebrity Matches', language)}</h3>
               <div className="grid grid-cols-6 gap-1 mt-2 mb-2">
-                <div className="text-center">
+              <div className="text-center">
                   <img src="/images/v.png" alt="Taehyung" className="w-10 h-10 mx-auto rounded-full object-cover" />
-                </div>
-                <div className="text-center">
+              </div>
+              <div className="text-center">
                   <img src="/images/l.png" alt="Lee Jung Jae" className="w-10 h-10 mx-auto rounded-full object-cover" />
-                </div>
-                <div className="text-center">
+              </div>
+              <div className="text-center">
                   <img src="/images/li.png" alt="Lisa" className="w-10 h-10 mx-auto rounded-full object-cover" />
-                </div>
+              </div>
                 <div className="text-center">
                   <img src="/images/cha.png" alt="Cha Eun Woo" className="w-10 h-10 mx-auto rounded-full object-cover" />
-                </div>
+            </div>
                 <div className="text-center">
                   <img src="/images/r.png" alt="Rose" className="w-10 h-10 mx-auto rounded-full object-cover" />
                 </div>
@@ -761,113 +761,113 @@ export default function AnalysisPage() {
                 </div>
               </div>
               <p className="text-xs text-gray-500">Find your celebrity twin</p>
-            </div>
           </div>
-
-          {/* Leaderboard Button */}
-          <div className="flex justify-center mb-8">
-            <a
-              href="/leaderboard"
-              className="inline-flex items-center space-x-2 w-full max-w-md justify-center px-8 py-3 rounded-full font-semibold transition-colors text-white"
-              style={{ backgroundColor: '#1da1f2' }}
-              onMouseOver={e => (e.currentTarget.style.backgroundColor = '#1a8cd8')}
-              onMouseOut={e => (e.currentTarget.style.backgroundColor = '#1da1f2')}
-            >
-              <Trophy size={20} />
-              <span>{getTranslation('Check Leaderboard', language)}</span>
-            </a>
-          </div>
-
-
         </div>
 
-        {/* Leaderboard Modal */}
-        <AnimatePresence>
-          {showLeaderboard && (
+        {/* Leaderboard Button */}
+        <div className="flex justify-center mb-8">
+          <a
+            href="/leaderboard"
+            className="inline-flex items-center space-x-2 w-full max-w-md justify-center px-8 py-3 rounded-full font-semibold transition-colors text-white"
+            style={{ backgroundColor: '#1da1f2' }}
+            onMouseOver={e => (e.currentTarget.style.backgroundColor = '#1a8cd8')}
+            onMouseOut={e => (e.currentTarget.style.backgroundColor = '#1da1f2')}
+          >
+            <Trophy size={20} />
+            <span>{getTranslation('Check Leaderboard', language)}</span>
+          </a>
+        </div>
+
+
+      </div>
+
+      {/* Leaderboard Modal */}
+      <AnimatePresence>
+        {showLeaderboard && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-              >
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {getTranslation('Global Leaderboard', language)}
-                  </h3>
-                  <button
-                    onClick={() => setShowLeaderboard(false)}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <AlertCircle size={24} />
-                  </button>
-                </div>
-                
-                <Leaderboard language={language} />
-              </motion.div>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-800">
+                  {getTranslation('Global Leaderboard', language)}
+                </h3>
+                <button
+                  onClick={() => setShowLeaderboard(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <AlertCircle size={24} />
+                </button>
+              </div>
+              
+              <Leaderboard language={language} />
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Webcam Modal */}
-        <AnimatePresence>
-          {showWebcam && (
+      {/* Webcam Modal */}
+      <AnimatePresence>
+        {showWebcam && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-md w-full"
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-2xl p-6 max-w-md w-full"
-              >
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-semibold mb-2">
-                    {getTranslation('Take a Photo', language)}
-                  </h3>
-                  <p className="text-gray-600">
-                    {getTranslation('Position your face in the frame', language)}
-                  </p>
-                </div>
+              <div className="text-center mb-4">
+                <h3 className="text-xl font-semibold mb-2">
+                  {getTranslation('Take a Photo', language)}
+                </h3>
+                <p className="text-gray-600">
+                  {getTranslation('Position your face in the frame', language)}
+                </p>
+              </div>
 
-                <div className="mb-4">
-                  <Webcam
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    className="w-full rounded-lg"
-                  />
-                </div>
+              <div className="mb-4">
+                <Webcam
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  className="w-full rounded-lg"
+                />
+              </div>
 
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => setShowWebcam(false)}
-                    className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    {getTranslation('Cancel', language)}
-                  </button>
-                  <button
-                    onClick={capturePhoto}
-                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    {getTranslation('Capture', language)}
-                  </button>
-                </div>
-              </motion.div>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setShowWebcam(false)}
+                  className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  {getTranslation('Cancel', language)}
+                </button>
+                <button
+                  onClick={capturePhoto}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {getTranslation('Capture', language)}
+                </button>
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Modals */}
-        {showSignUp && (<SignUpModal onClose={() => setShowSignUp(false)} onSwitch={() => { setShowSignUp(false); setShowLogin(true); }} />)}
-        {showLogin && (<LoginModal onClose={() => setShowLogin(false)} onSwitch={() => { setShowLogin(false); setShowSignUp(true); }} />)}
+      {/* Modals */}
+      {showSignUp && (<SignUpModal onClose={() => setShowSignUp(false)} onSwitch={() => { setShowSignUp(false); setShowLogin(true); }} />)}
+      {showLogin && (<LoginModal onClose={() => setShowLogin(false)} onSwitch={() => { setShowLogin(false); setShowSignUp(true); }} />)}
       </div>
     </div>
   )

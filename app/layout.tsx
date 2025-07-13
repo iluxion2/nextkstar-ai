@@ -22,7 +22,7 @@ export default function RootLayout({
         <ConsentWrapper>
           <div className="min-h-screen flex flex-col">
             <main className="flex-1">
-              {children}
+        {children}
             </main>
             <Footer />
           </div>

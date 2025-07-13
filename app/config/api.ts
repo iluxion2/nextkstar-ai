@@ -2,11 +2,16 @@
 // For production, you'll need to deploy your backend to a cloud service
 // and update this URL to point to your deployed backend
 const getApiBaseUrl = () => {
+  // Use environment variable if available, otherwise fallback to localhost
+  const envUrl = process.env.NEXT_PUBLIC_API_URL
+  if (envUrl) {
+    return envUrl
+  }
+  
   // Check if we're in production (deployed site)
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-    // For now, we'll use localhost, but you should replace this with your deployed backend URL
-    // Example: return 'https://your-backend.railway.app'
-    return 'http://localhost:8000'
+    // Use the deployed backend URL
+    return 'https://nextkstar-backend.onrender.com'
   }
   // Local development
   return 'http://localhost:8000'
