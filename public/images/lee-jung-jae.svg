@@ -1,0 +1,42 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6EE7DF;stop-opacity:1" />
+    </linearGradient>
+    <clipPath id="face2">
+      <circle cx="40" cy="40" r="35"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="40" cy="40" r="40" fill="url(#grad2)"/>
+  
+  <!-- Face shape -->
+  <circle cx="40" cy="42" r="28" fill="#F7DC6F" clip-path="url(#face2)"/>
+  
+  <!-- Hair -->
+  <path d="M12 22 Q40 12 68 22 Q65 32 60 28 Q50 20 40 25 Q30 20 20 28 Q15 32 12 22" fill="#34495E"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="30" cy="38" rx="3.5" ry="2.5" fill="#2C3E50"/>
+  <ellipse cx="50" cy="38" rx="3.5" ry="2.5" fill="#2C3E50"/>
+  <circle cx="30" cy="38" r="1.2" fill="white"/>
+  <circle cx="50" cy="38" r="1.2" fill="white"/>
+  
+  <!-- Eyebrows -->
+  <path d="M25 35 Q30 33 35 35" stroke="#2C3E50" stroke-width="1.5" fill="none"/>
+  <path d="M45 35 Q50 33 55 35" stroke="#2C3E50" stroke-width="1.5" fill="none"/>
+  
+  <!-- Nose -->
+  <ellipse cx="40" cy="46" rx="2" ry="2.5" fill="#E67E22"/>
+  
+  <!-- Mouth -->
+  <path d="M35 52 Q40 54 45 52" stroke="#E74C3C" stroke-width="1.8" fill="none"/>
+  
+  <!-- Mature features -->
+  <path d="M30 45 Q40 47 50 45" stroke="#BDC3C7" stroke-width="0.5" fill="none" opacity="0.6"/>
+  
+  <!-- Border -->
+  <circle cx="40" cy="40" r="35" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+</svg> 
