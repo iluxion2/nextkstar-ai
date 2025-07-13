@@ -21,13 +21,8 @@ import random
 import gc
 import time
 
-# Import DeepFace with error handling
-try:
-    from deepface import DeepFace
-    DEEPFACE_AVAILABLE = True
-except ImportError as e:
-    logging.warning(f"DeepFace not available: {e}")
-    DEEPFACE_AVAILABLE = False
+# Face analysis without DeepFace (using OpenCV only)
+DEEPFACE_AVAILABLE = False
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -91,26 +86,57 @@ def find_celeb_info(name: str) -> Dict:
             return celeb
     return {}
 
-def analyze_with_deepface(image_path: str):
-    """Analyze image using DeepFace"""
-    if not DEEPFACE_AVAILABLE:
-        raise Exception("DeepFace is not available")
+def analyze_with_opencv(image_path: str):
+    """Analyze image using OpenCV (simplified face analysis)"""
+    if not CV2_AVAILABLE:
+        raise Exception("OpenCV is not available")
     
     try:
-        # Use different detector backend if OpenCV is not available
-        detector_backend = 'opencv' if CV2_AVAILABLE else 'mtcnn'
+        # Load image with OpenCV
+        img = cv2.imread(image_path)
+        if img is None:
+            raise Exception("Could not load image")
         
-        result = DeepFace.analyze(
-            img_path=image_path,
-            actions=['age', 'gender', 'emotion'],
-            enforce_detection=False,
-            detector_backend=detector_backend,
-            silent=True
-        )
+        # Convert to grayscale for face detection
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
-        return result
+        # Load face cascade classifier
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        
+        # Detect faces
+        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+        
+        if len(faces) == 0:
+            raise Exception("No faces detected")
+        
+        # Get the first face
+        x, y, w, h = faces[0]
+        
+        # Simple analysis based on face size and position
+        face_area = w * h
+        image_area = img.shape[0] * img.shape[1]
+        face_ratio = face_area / image_area
+        
+        # Estimate age based on face size (very simplified)
+        estimated_age = 25 + int((face_ratio - 0.1) * 100)
+        estimated_age = max(18, min(60, estimated_age))
+        
+        # Simple gender estimation (placeholder)
+        estimated_gender = "Unknown"
+        
+        # Simple emotion estimation (placeholder)
+        estimated_emotion = "neutral"
+        
+        return {
+            'age': estimated_age,
+            'gender': estimated_gender,
+            'dominant_emotion': estimated_emotion,
+            'face_detected': True,
+            'face_count': len(faces)
+        }
+        
     except Exception as e:
-        logger.error(f"DeepFace analysis error: {e}")
+        logger.error(f"OpenCV analysis error: {e}")
         raise
 
 def calculate_beauty_score(age: int, gender: str, emotion: str, facial_features: Dict) -> float:
@@ -233,9 +259,9 @@ async def analyze_face(file: UploadFile = File(...)):
             with open(temp_path, "wb") as f:
                 f.write(contents)
         
-            # Analyze with DeepFace
-            logger.info("Starting DeepFace analysis...")
-            result = analyze_with_deepface(temp_path)
+            # Analyze with OpenCV
+            logger.info("Starting OpenCV face analysis...")
+            result = analyze_with_opencv(temp_path)
         
             # Extract results
             if isinstance(result, list):
