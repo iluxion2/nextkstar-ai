@@ -9,6 +9,7 @@ python-dotenv>=1.0.0
 lxml>=4.9.0
 beautifulsoup4>=4.12.0
 setuptools>=65.0.0
-# Face analysis packages
-deepface>=0.0.79
-opencv-python>=4.8.0
+# Face analysis packages for Starter tier
+deepface==0.0.79
+opencv-python-headless==4.8.1.78
+tensorflow>=2.13.0
