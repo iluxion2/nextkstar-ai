@@ -243,11 +243,11 @@ async def analyze_face(file: UploadFile = File(...)):
             if age is None or gender is None:
                 if DEEPFACE_AVAILABLE:
                     logger.info("Starting DeepFace analysis (fallback)...")
-                    result = analyze_with_deepface(temp_path)
-                    if isinstance(result, list):
-                        result = result[0]
-                    age = result.get('age', 25)
-                    gender = result.get('gender', 'Unknown')
+            result = analyze_with_deepface(temp_path)
+            if isinstance(result, list):
+                result = result[0]
+        age = result.get('age', 25)
+            gender = result.get('gender', 'Unknown')
                 else:
                     age = 25
                     gender = 'Unknown'
@@ -258,7 +258,7 @@ async def analyze_face(file: UploadFile = File(...)):
                     result = analyze_with_deepface(temp_path)
                     if isinstance(result, list):
                         result = result[0]
-                    emotion = result.get('dominant_emotion', 'neutral')
+        emotion = result.get('dominant_emotion', 'neutral')
                 except Exception as e:
                     logger.warning(f"DeepFace emotion fallback failed: {e}")
             # Calculate facial features (simplified for now)
@@ -268,26 +268,26 @@ async def analyze_face(file: UploadFile = File(...)):
                 "proportions": random.uniform(75, 90),
                 "expression": 85 if emotion == 'happy' else 75
             }
-            # Calculate beauty score
+        # Calculate beauty score
             beauty_score = calculate_beauty_score(age, gender, emotion, facial_features)
-            # Find celebrity lookalike
+        # Find celebrity lookalike
             lookalike_result = find_celebrity_lookalike(beauty_score, age, gender)
-            # Prepare response
-            response = {
-                "success": True,
-                "analysis": {
-                    "age": age,
-                    "gender": gender,
-                    "emotion": emotion,
+        # Prepare response
+        response = {
+            "success": True,
+            "analysis": {
+                "age": age,
+                "gender": gender,
+                "emotion": emotion,
                     "race": "Unknown",
                     "beauty_score": round(beauty_score, 1),
                     "facial_features": facial_features
-                },
-                "lookalike": lookalike_result,
-                "timestamp": str(np.datetime64('now'))
-            }
-            logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
-            return response
+            },
+            "lookalike": lookalike_result,
+            "timestamp": str(np.datetime64('now'))
+        }
+        logger.info(f"Analysis completed: Age={age}, Gender={gender}, Beauty={beauty_score}")
+        return response
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
@@ -325,10 +325,10 @@ async def get_celebrities():
 @app.get("/csv-stats/")
 async def get_csv_stats():
     """Get CSV data statistics"""
-    return {
-        "total_records": len(celeb_data),
+        return {
+            "total_records": len(celeb_data),
         "sample_records": celeb_data[:5] if celeb_data else []
-    }
+        }
 
 @app.post("/reload-celebrities/")
 async def reload_celebrities():

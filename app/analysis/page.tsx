@@ -403,7 +403,7 @@ export default function AnalysisPage() {
               {/* Auth Buttons */}
               {!isRealUser ? (
                 <div className="flex items-center space-x-1 md:space-x-2">
-                  <button
+              <button
                     onClick={() => setShowSignUp(true)}
                     className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-2 rounded-full transition-colors text-white text-sm md:text-base"
                     style={{ backgroundColor: '#ff5a8d' }}
@@ -422,8 +422,8 @@ export default function AnalysisPage() {
                   >
                     <span className="hidden sm:inline">{getTranslation('Login', language)}</span>
                     <span className="sm:hidden">Login</span>
-                  </button>
-                </div>
+              </button>
+            </div>
               ) : (
                 <div className="flex items-center space-x-2">
                   <button
@@ -434,7 +434,7 @@ export default function AnalysisPage() {
                     <span className="hidden sm:inline">{user.displayName || user.email}</span>
                     <span className="sm:hidden">{user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'User'}</span>
                   </button>
-                </div>
+          </div>
               )}
             </div>
           </div>
@@ -545,14 +545,14 @@ export default function AnalysisPage() {
             <div className="hidden md:grid md:grid-cols-3 gap-6 max-w-4xl w-full">
               {/* Celebrity Match Card */}
               <div className="flex justify-center">
-                <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
-              </div>
+              <CelebrityMatch celebrityMatches={analysisResult.celebrityMatches} language={language} />
+            </div>
               {/* Expected Age Card */}
               <div className="bg-white rounded-xl p-4 text-center shadow-lg flex flex-col justify-center">
                 <h3 className="text-xl font-bold mb-4">Expected Age</h3>
                 <div className="text-4xl font-bold text-blue-600 mb-2">
                   {typeof analysisResult.age === 'number' ? analysisResult.age : Math.round(20 + (analysisResult.beautyScore-5)*2)}
-                </div>
+          </div>
                 <div className="text-gray-500 text-sm">AI-estimated age</div>
               </div>
               {/* Instagram Followers Card */}

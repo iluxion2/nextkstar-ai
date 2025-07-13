@@ -172,15 +172,15 @@ export default function Leaderboard({ language }: LeaderboardProps) {
         ) : (
           data.map((analysis, index) => (
             <div key={analysis.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center space-x-3 min-w-0">
+            <div className="flex items-center space-x-3 min-w-0">
                 {index < 3 ? (
-                  <div className="w-8 h-8 flex-shrink-0">
+                <div className="w-8 h-8 flex-shrink-0">
                     <Image src={awardImages[index]} alt={`award-${index + 1}`} width={32} height={32} className="object-contain w-full h-full" />
-                  </div>
-                ) : (
+                </div>
+              ) : (
                   <span className="font-bold text-gray-500 text-lg w-8 text-center flex-shrink-0">#{index + 1}</span>
-                )}
-                <div className="w-10 h-10 flex-shrink-0">
+              )}
+              <div className="w-10 h-10 flex-shrink-0">
                   <img 
                     src={getImageSrc(analysis)} 
                     alt={getUserDisplayName(analysis)} 

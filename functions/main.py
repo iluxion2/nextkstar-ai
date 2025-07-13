@@ -89,8 +89,8 @@ def load_celebrities():
         logger.info(f"Loaded {len(celeb_names)} celebrity images")
     else:
         logger.warning("Celebrities directory not found")
-        celeb_names = []
-        celeb_images = []
+    celeb_names = []
+    celeb_images = []
 
 def find_celeb_info(name: str) -> Dict:
     """Find celebrity info from CSV data"""
@@ -198,7 +198,7 @@ def find_celebrity_lookalike(beauty_score: float, age: int, gender: str) -> Dict
     }
 
 # Load celebrities on startup
-load_celebrities()
+    load_celebrities()
 
 @app.get("/")
 async def root():
@@ -246,7 +246,7 @@ async def analyze_face(file: UploadFile = File(...)):
             age = result.get('age', 25)
             gender = result.get('gender', 'Unknown')
             emotion = result.get('dominant_emotion', 'neutral')
-        
+            
             # Calculate facial features (simplified for now)
             facial_features = {
                 "symmetry": random.uniform(70, 95),

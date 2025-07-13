@@ -372,11 +372,43 @@ def generate_ai_personality_insights(age: int, gender: str, beauty_score: float,
     """
     
     try:
-        # Try to use OpenAI API if available
-        api_key = os.getenv('OPENAI_API_KEY')
-        if api_key:
+        # Try Groq API first (free tier: 100 requests/day, super fast)
+        groq_api_key = os.getenv('GROQ_API_KEY')
+        if groq_api_key:
             headers = {
-                'Authorization': f'Bearer {api_key}',
+                'Authorization': f'Bearer {groq_api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'model': 'llama2-70b-4096',  # Fast and free
+                'messages': [
+                    {
+                        'role': 'system',
+                        'content': 'You are a fun, encouraging AI that analyzes facial features and generates entertaining personality insights. Be creative, use emojis, and make people feel special!'
+                    },
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ],
+                'max_tokens': 500,
+                'temperature': 0.8
+            }
+            
+            response = requests.post('https://api.groq.com/openai/v1/chat/completions', headers=headers, json=data, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                ai_response = result['choices'][0]['message']['content']
+                logger.info("Used Groq API for insights")
+                return parse_ai_response(ai_response)
+        
+        # Try OpenAI API if available
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        if openai_api_key:
+            headers = {
+                'Authorization': f'Bearer {openai_api_key}',
                 'Content-Type': 'application/json'
             }
             
@@ -396,16 +428,42 @@ def generate_ai_personality_insights(age: int, gender: str, beauty_score: float,
                 'temperature': 0.8
             }
             
-            response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
+            response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data, timeout=10)
             
             if response.status_code == 200:
                 result = response.json()
                 ai_response = result['choices'][0]['message']['content']
-                
-                # Parse the AI response into structured format
+                logger.info("Used OpenAI API for insights")
                 return parse_ai_response(ai_response)
         
+        # Try Hugging Face Inference API (free tier: 30k requests/month)
+        hf_api_key = os.getenv('HUGGINGFACE_API_KEY')
+        if hf_api_key:
+            headers = {
+                'Authorization': f'Bearer {hf_api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'inputs': f"System: You are a fun AI that generates personality insights. User: {prompt}",
+                'parameters': {
+                    'max_new_tokens': 500,
+                    'temperature': 0.8,
+                    'return_full_text': False
+                }
+            }
+            
+            response = requests.post('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', headers=headers, json=data, timeout=15)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, list) and len(result) > 0:
+                    ai_response = result[0].get('generated_text', '')
+                    logger.info("Used Hugging Face API for insights")
+                    return parse_ai_response(ai_response)
+        
         # Fallback to local AI model or predefined responses
+        logger.info("Using local AI insights (no API keys available)")
         return generate_local_ai_insights(age, gender, beauty_score, emotion, facial_features)
         
     except Exception as e:
@@ -791,7 +849,7 @@ def generate_smart_real_insights(age: int, gender: str, beauty_score: float, emo
     
     # Use Hugging Face Inference API (free tier)
     try:
-        api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+        api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-large"
         headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY', '')}"}
         
         prompt = f"""
