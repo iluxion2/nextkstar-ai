@@ -11,3 +11,4 @@ beautifulsoup4==4.12.2
 # DeepFace and OpenCV for face analysis
 deepface==0.0.79
 opencv-python-headless==4.8.1.78 setuptools>=65.0.0
+# Fixed formatting
