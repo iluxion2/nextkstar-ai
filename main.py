@@ -5,6 +5,10 @@ from PIL import Image
 import numpy as np
 import os
 import io
+import logging
+import pandas as pd
+from typing import List, Dict, Any
+
 # Import OpenCV with error handling
 try:
     import cv2
@@ -12,9 +16,6 @@ try:
 except ImportError as e:
     logging.warning(f"OpenCV not available: {e}")
     CV2_AVAILABLE = False
-import pandas as pd
-from typing import List, Dict, Any
-import logging
 import math
 import random
 import gc
